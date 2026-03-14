@@ -1,0 +1,62 @@
+app:
+  name: ssis-to-pyspark
+  version: "2.0.0"
+  environment: development
+
+llm:
+  provider: anthropic   # anthropic | azure_anthropic | gemini | azure_openai | azure_openai_codex | databricks | ollama
+  generation:
+    temperature: 0.0
+    max_tokens: 8192
+  anthropic:
+    model: claude-sonnet-4-20250514
+    timeout: 120
+  gemini:
+    model: gemini-2.5-flash-lite
+    timeout: 60
+  ollama:
+    model: qwen2.5-coder:7b
+    base_url: http://localhost:11434
+    timeout: 500
+  azure_openai:
+    deployment_name: gpt-4o-mini
+    endpoint: https://your-resource.openai.azure.com/
+    api_version: "2024-02-15-preview"
+    use_responses_api: false
+    timeout: 60
+  azure_openai_codex:
+    deployment_name: gpt-5.3-codex
+    endpoint: https://your-foundry.cognitiveservices.azure.com/
+    api_version: "2025-04-01-preview"
+    use_responses_api: true
+    timeout: 300
+  azure_anthropic:
+    deployment_name: claude-sonnet-4-6
+    endpoint: https://your-foundry.services.ai.azure.com/anthropic
+    api_version: "2024-06-01"
+    timeout: 300
+  databricks:
+    model: databricks-meta-llama-3-1-70b-instruct
+    workspace_url: ""
+    timeout: 60
+
+logging:
+  level: INFO
+  format: console
+  file:
+    enabled: true
+    path: logs/app.log
+    rotation: 10 MB
+    retention: 10
+
+paths:
+  prompts: prompts
+  knowledge: prompts/knowledge
+  samples: samples
+  output: output
+  golden: golden
+
+conversion:
+  include_comments: true
+  include_type_hints: true
+  output_style: single_file

@@ -1,0 +1,292 @@
+# SSIS to PySpark Data Type Mappings
+
+data_types:
+  # Integer Types
+  DT_I1:
+    ssis: "DT_I1"
+    sql_server: "TINYINT"
+    pyspark: "ByteType()"
+
+  DT_I2:
+    ssis: "DT_I2"
+    sql_server: "SMALLINT"
+    pyspark: "ShortType()"
+
+  DT_I4:
+    ssis: "DT_I4"
+    sql_server: "INT"
+    pyspark: "IntegerType()"
+
+  DT_I8:
+    ssis: "DT_I8"
+    sql_server: "BIGINT"
+    pyspark: "LongType()"
+
+  DT_UI1:
+    ssis: "DT_UI1"
+    sql_server: "TINYINT (unsigned)"
+    pyspark: "ShortType()"
+
+  DT_UI2:
+    ssis: "DT_UI2"
+    sql_server: "SMALLINT (unsigned)"
+    pyspark: "IntegerType()"
+
+  DT_UI4:
+    ssis: "DT_UI4"
+    sql_server: "INT (unsigned)"
+    pyspark: "LongType()"
+
+  DT_UI8:
+    ssis: "DT_UI8"
+    sql_server: "BIGINT (unsigned)"
+    pyspark: "DecimalType(20, 0)"
+
+  # Floating Point Types
+  DT_R4:
+    ssis: "DT_R4"
+    sql_server: "REAL"
+    pyspark: "FloatType()"
+
+  DT_R8:
+    ssis: "DT_R8"
+    sql_server: "FLOAT"
+    pyspark: "DoubleType()"
+
+  # Decimal Types
+  DT_DECIMAL:
+    ssis: "DT_DECIMAL"
+    sql_server: "DECIMAL"
+    pyspark: "DecimalType(precision, scale)"
+
+  DT_NUMERIC:
+    ssis: "DT_NUMERIC"
+    sql_server: "NUMERIC"
+    pyspark: "DecimalType(precision, scale)"
+
+  DT_CY:
+    ssis: "DT_CY"
+    sql_server: "MONEY, SMALLMONEY"
+    pyspark: "DecimalType(19, 4)"
+
+  # String Types
+  DT_STR:
+    ssis: "DT_STR"
+    sql_server: "CHAR, VARCHAR"
+    pyspark: "StringType()"
+
+  DT_WSTR:
+    ssis: "DT_WSTR"
+    sql_server: "NCHAR, NVARCHAR"
+    pyspark: "StringType()"
+
+  DT_TEXT:
+    ssis: "DT_TEXT"
+    sql_server: "TEXT"
+    pyspark: "StringType()"
+
+  DT_NTEXT:
+    ssis: "DT_NTEXT"
+    sql_server: "NTEXT"
+    pyspark: "StringType()"
+
+  # Date/Time Types
+  DT_DATE:
+    ssis: "DT_DATE"
+    sql_server: "DATE"
+    pyspark: "DateType()"
+
+  DT_DBDATE:
+    ssis: "DT_DBDATE"
+    sql_server: "DATE"
+    pyspark: "DateType()"
+
+  DT_DBTIME:
+    ssis: "DT_DBTIME"
+    sql_server: "TIME"
+    pyspark: "StringType()  # or TimestampType()"
+
+  DT_DBTIME2:
+    ssis: "DT_DBTIME2"
+    sql_server: "TIME"
+    pyspark: "StringType()  # or TimestampType()"
+
+  DT_DBTIMESTAMP:
+    ssis: "DT_DBTIMESTAMP"
+    sql_server: "DATETIME"
+    pyspark: "TimestampType()"
+
+  DT_DBTIMESTAMP2:
+    ssis: "DT_DBTIMESTAMP2"
+    sql_server: "DATETIME2"
+    pyspark: "TimestampType()"
+
+  DT_DBTIMESTAMPOFFSET:
+    ssis: "DT_DBTIMESTAMPOFFSET"
+    sql_server: "DATETIMEOFFSET"
+    pyspark: "TimestampType()  # Note: timezone info may be lost"
+
+  DT_FILETIME:
+    ssis: "DT_FILETIME"
+    sql_server: "DATETIME"
+    pyspark: "TimestampType()"
+
+  # Boolean Type
+  DT_BOOL:
+    ssis: "DT_BOOL"
+    sql_server: "BIT"
+    pyspark: "BooleanType()"
+
+  # Binary Types
+  DT_BYTES:
+    ssis: "DT_BYTES"
+    sql_server: "BINARY, VARBINARY"
+    pyspark: "BinaryType()"
+
+  DT_IMAGE:
+    ssis: "DT_IMAGE"
+    sql_server: "IMAGE"
+    pyspark: "BinaryType()"
+
+  # GUID Type
+  DT_GUID:
+    ssis: "DT_GUID"
+    sql_server: "UNIQUEIDENTIFIER"
+    pyspark: "StringType()"
+
+# SQL Server to PySpark Type Mappings (for OLE DB Source)
+sql_server_types:
+  INT:
+    pyspark: "IntegerType()"
+  BIGINT:
+    pyspark: "LongType()"
+  SMALLINT:
+    pyspark: "ShortType()"
+  TINYINT:
+    pyspark: "ByteType()"
+  BIT:
+    pyspark: "BooleanType()"
+  DECIMAL:
+    pyspark: "DecimalType(precision, scale)"
+  NUMERIC:
+    pyspark: "DecimalType(precision, scale)"
+  MONEY:
+    pyspark: "DecimalType(19, 4)"
+  SMALLMONEY:
+    pyspark: "DecimalType(10, 4)"
+  FLOAT:
+    pyspark: "DoubleType()"
+  REAL:
+    pyspark: "FloatType()"
+  DATETIME:
+    pyspark: "TimestampType()"
+  DATETIME2:
+    pyspark: "TimestampType()"
+  SMALLDATETIME:
+    pyspark: "TimestampType()"
+  DATE:
+    pyspark: "DateType()"
+  TIME:
+    pyspark: "StringType()"
+  DATETIMEOFFSET:
+    pyspark: "TimestampType()"
+  CHAR:
+    pyspark: "StringType()"
+  VARCHAR:
+    pyspark: "StringType()"
+  TEXT:
+    pyspark: "StringType()"
+  NCHAR:
+    pyspark: "StringType()"
+  NVARCHAR:
+    pyspark: "StringType()"
+  NTEXT:
+    pyspark: "StringType()"
+  BINARY:
+    pyspark: "BinaryType()"
+  VARBINARY:
+    pyspark: "BinaryType()"
+  IMAGE:
+    pyspark: "BinaryType()"
+  UNIQUEIDENTIFIER:
+    pyspark: "StringType()"
+
+# Date/Time Format Mappings
+date_formats:
+  # SSIS format -> PySpark format
+  "MM/DD/YYYY": "MM/dd/yyyy"
+  "YYYY-MM-DD": "yyyy-MM-dd"
+  "DD-MON-YYYY": "dd-MMM-yyyy"
+  "YYYYMMDD": "yyyyMMdd"
+  "HH:MI:SS": "HH:mm:ss"
+  "YYYY-MM-DD HH:MI:SS": "yyyy-MM-dd HH:mm:ss"
+  "MM/DD/YYYY HH:MI:SS": "MM/dd/yyyy HH:mm:ss"
+
+# ─── SQL Server 2016+ and Specialty Types ───────────────────────────────────
+# These types are not represented in the standard SSIS DT_ type set,
+# but may appear in source tables read by OLE DB Source components.
+sql_server_specialty_types:
+  HIERARCHYID:
+    pyspark: "StringType()"
+    notes: "No native PySpark equivalent. Represents as WKT string or path like '/1/2/'."
+  GEOMETRY:
+    pyspark: "StringType()"
+    notes: "Represent as WKT string (Well-Known Text). Use .STAsText() in source query."
+  GEOGRAPHY:
+    pyspark: "StringType()"
+    notes: "Represent as WKT string. Use .STAsText() in source query."
+  ROWVERSION:
+    pyspark: "LongType()"
+    notes: "Binary rowversion → cast to BIGINT in source SQL: CAST(ts AS BIGINT)."
+  TIMESTAMP: # SQL Server TIMESTAMP = rowversion alias
+    pyspark: "LongType()"
+    notes: "SQL Server TIMESTAMP is a rowversion alias, NOT a datetime. Cast to BIGINT."
+  XML:
+    pyspark: "StringType()"
+    notes: "Read as string. Use .value() or .query() in source SQL for specific fields."
+  SQL_VARIANT:
+    pyspark: "StringType()"
+    notes: "No direct equivalent. Cast to NVARCHAR(MAX) in source SQL before reading."
+  SYSNAME:
+    pyspark: "StringType()"
+    notes: "System name type (max 128 chars). Treat as StringType."
+  UNIQUEIDENTIFIER:
+    pyspark: "StringType()"
+    notes: "UUID/GUID. Stored as 36-char string. Use F.regexp_replace if dashes must be removed."
+
+# ─── Additional JDBC Driver Templates ──────────────────────────────────────
+# Use these templates when the SSIS connection manager uses a non-SQL-Server provider.
+jdbc_driver_templates:
+  sql_server:
+    url_template: "jdbc:sqlserver://{host}:{port};databaseName={database};encrypt=true;trustServerCertificate=true"
+    driver: "com.microsoft.sqlserver.jdbc.SQLServerDriver"
+    default_port: 1433
+
+  oracle:
+    url_template: "jdbc:oracle:thin:@{host}:{port}/{service}"
+    driver: "oracle.jdbc.driver.OracleDriver"
+    default_port: 1521
+    alternative_url: "jdbc:oracle:thin:@//{host}:{port}/{service}"
+    notes: "Use JDBC thin driver. service = Oracle SID or Service Name."
+
+  mysql:
+    url_template: "jdbc:mysql://{host}:{port}/{database}?useSSL=false&allowPublicKeyRetrieval=true"
+    driver: "com.mysql.cj.jdbc.Driver"
+    default_port: 3306
+    notes: "Requires mysql-connector-java in Spark classpath."
+
+  postgresql:
+    url_template: "jdbc:postgresql://{host}:{port}/{database}"
+    driver: "org.postgresql.Driver"
+    default_port: 5432
+
+  teradata:
+    url_template: "jdbc:teradata://{host}/database={database},tmode=ANSI,charset=UTF8"
+    driver: "com.teradata.jdbc.TeraDriver"
+    default_port: 1025
+    notes: "Requires Teradata JDBC driver .jar. Use ANSI mode for consistent NULL handling."
+
+  db2:
+    url_template: "jdbc:db2://{host}:{port}/{database}"
+    driver: "com.ibm.db2.jcc.DB2Driver"
+    default_port: 50000

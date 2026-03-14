@@ -1,0 +1,1702 @@
+<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="1/11/2026 12:00:00 AM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="HEALTHCARE-ETL"
+  DTS:CreatorName="ETL_Developer"
+  DTS:DTSID="{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="16.0.5467.0"
+  DTS:LocaleID="1033"
+  DTS:ObjectName="HealthcareETL"
+  DTS:PackageType="5"
+  DTS:VersionBuild="1"
+  DTS:VersionGUID="{11111111-2222-3333-4444-555555555555}">
+
+  <DTS:Property DTS:Name="PackageFormatVersion">8</DTS:Property>
+
+  <!-- Connection Managers -->
+  <DTS:ConnectionManagers>
+    <!-- Source Database Connection -->
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[SourceDB]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{CONN0001-0001-0001-0001-000000000001}"
+      DTS:ObjectName="SourceDB">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectRetryCount="1"
+          DTS:ConnectRetryInterval="5"
+          DTS:ConnectionString="Data Source=localhost;Initial Catalog=HealthcareSource;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;">
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+
+    <!-- Target Database Connection -->
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[TargetDB]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{CONN0002-0002-0002-0002-000000000002}"
+      DTS:ObjectName="TargetDB">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectRetryCount="1"
+          DTS:ConnectRetryInterval="5"
+          DTS:ConnectionString="Data Source=localhost;Initial Catalog=HealthcareTarget;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;">
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+
+    <!-- NPI Lookup Database Connection -->
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[NPILookupDB]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{CONN0003-0003-0003-0003-000000000003}"
+      DTS:ObjectName="NPILookupDB">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectRetryCount="1"
+          DTS:ConnectRetryInterval="5"
+          DTS:ConnectionString="Data Source=localhost;Initial Catalog=NPIRegistry;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;">
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+
+  <!-- Variables -->
+  <DTS:Variables>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{VAR00001-0001-0001-0001-000000000001}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="ProcessingDate">
+      <DTS:VariableValue DTS:DataType="7">1/11/2026</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{VAR00002-0002-0002-0002-000000000002}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="RowCount_Members">
+      <DTS:VariableValue DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{VAR00003-0003-0003-0003-000000000003}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="RowCount_Claims">
+      <DTS:VariableValue DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{VAR00004-0004-0004-0004-000000000004}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="RowCount_Pharmacy">
+      <DTS:VariableValue DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+  </DTS:Variables>
+
+  <!-- Main Executables (Control Flow) -->
+  <DTS:Executables>
+
+    <!-- ========================================== -->
+    <!-- TASK 1: Data Flow - Transform Members -->
+    <!-- ========================================== -->
+    <DTS:Executable
+      DTS:refId="Package\DFT_TransformMembers"
+      DTS:CreationName="Microsoft.Pipeline"
+      DTS:Description="Read and transform member data with gender and zip standardization"
+      DTS:DTSID="{DFT00001-0001-0001-0001-000000000001}"
+      DTS:ExecutableType="Microsoft.Pipeline"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="DFT_TransformMembers"
+      DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation">
+
+      <DTS:ObjectData>
+        <pipeline version="1" BLOBTempStoragePath="" bufferTempStoragePath="">
+          <components>
+
+            <!-- Source: Member Table -->
+            <component
+              refId="Package\DFT_TransformMembers\SRC_Member"
+              componentClassID="Microsoft.OLEDBSource"
+              contactInfo="OLE DB Source"
+              description="OLE DB Source - Member Table"
+              name="SRC_Member"
+              usesDispositions="true"
+              version="7">
+              <properties>
+                <property name="CommandTimeout" dataType="System.Int32">0</property>
+                <property name="OpenRowset" dataType="System.String">dbo.member</property>
+                <property name="AccessMode" dataType="System.Int32">0</property>
+                <property name="SqlCommand" dataType="System.String">SELECT
+    member_id,
+    mrn,
+    first_name,
+    last_name,
+    date_of_birth,
+    gender,
+    address_line1,
+    city,
+    state,
+    zip_code,
+    phone,
+    email,
+    race,
+    ethnicity,
+    death_date,
+    created_timestamp,
+    updated_timestamp
+FROM dbo.member</property>
+              </properties>
+              <connections>
+                <connection refId="Package\DFT_TransformMembers\SRC_Member.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[SourceDB]"
+                  connectionManagerRefId="Package.ConnectionManagers[SourceDB]"
+                  name="OleDbConnection"/>
+              </connections>
+              <outputs>
+                <output refId="Package\DFT_TransformMembers\SRC_Member.Outputs[OLE DB Source Output]"
+                  name="OLE DB Source Output">
+                  <outputColumns>
+                    <outputColumn refId="Package\DFT_TransformMembers\SRC_Member.Outputs[OLE DB Source Output].Columns[member_id]" dataType="wstr" length="50" name="member_id"/>
+                    <outputColumn refId="Package\DFT_TransformMembers\SRC_Member.Outputs[OLE DB Source Output].Columns[mrn]" dataType="wstr" length="50" name="mrn"/>
+                    <outputColumn refId="Package\DFT_TransformMembers\SRC_Member.Outputs[OLE DB Source Output].Columns[first_name]" dataType="wstr" length="100" name="first_name"/>
+                    <outputColumn refId="Package\DFT_TransformMembers\SRC_Member.Outputs[OLE DB Source Output].Columns[last_name]" dataType="wstr" length="100" name="last_name"/>
+                    <outputColumn refId="Package\DFT_TransformMembers\SRC_Member.Outputs[OLE DB Source Output].Columns[date_of_birth]" dataType="dbDate" name="date_of_birth"/>
+                    <outputColumn refId="Package\DFT_TransformMembers\SRC_Member.Outputs[OLE DB Source Output].Columns[gender]" dataType="wstr" length="10" name="gender"/>
+                    <outputColumn refId="Package\DFT_TransformMembers\SRC_Member.Outputs[OLE DB Source Output].Columns[address_line1]" dataType="wstr" length="200" name="address_line1"/>
+                    <outputColumn refId="Package\DFT_TransformMembers\SRC_Member.Outputs[OLE DB Source Output].Columns[city]" dataType="wstr" length="100" name="city"/>
+                    <outputColumn refId="Package\DFT_TransformMembers\SRC_Member.Outputs[OLE DB Source Output].Columns[state]" dataType="wstr" length="10" name="state"/>
+                    <outputColumn refId="Package\DFT_TransformMembers\SRC_Member.Outputs[OLE DB Source Output].Columns[zip_code]" dataType="wstr" length="10" name="zip_code"/>
+                    <outputColumn refId="Package\DFT_TransformMembers\SRC_Member.Outputs[OLE DB Source Output].Columns[phone]" dataType="wstr" length="20" name="phone"/>
+                    <outputColumn refId="Package\DFT_TransformMembers\SRC_Member.Outputs[OLE DB Source Output].Columns[email]" dataType="wstr" length="100" name="email"/>
+                    <outputColumn refId="Package\DFT_TransformMembers\SRC_Member.Outputs[OLE DB Source Output].Columns[race]" dataType="wstr" length="50" name="race"/>
+                    <outputColumn refId="Package\DFT_TransformMembers\SRC_Member.Outputs[OLE DB Source Output].Columns[ethnicity]" dataType="wstr" length="50" name="ethnicity"/>
+                    <outputColumn refId="Package\DFT_TransformMembers\SRC_Member.Outputs[OLE DB Source Output].Columns[death_date]" dataType="dbDate" name="death_date"/>
+                    <outputColumn refId="Package\DFT_TransformMembers\SRC_Member.Outputs[OLE DB Source Output].Columns[created_timestamp]" dataType="dbTimeStamp" name="created_timestamp"/>
+                    <outputColumn refId="Package\DFT_TransformMembers\SRC_Member.Outputs[OLE DB Source Output].Columns[updated_timestamp]" dataType="dbTimeStamp" name="updated_timestamp"/>
+                  </outputColumns>
+                </output>
+              </outputs>
+            </component>
+
+            <!-- Derived Column: Gender Standardization -->
+            <component
+              refId="Package\DFT_TransformMembers\DER_GenderStandardization"
+              componentClassID="Microsoft.DerivedColumn"
+              contactInfo="Derived Column Transformation"
+              description="Standardize gender codes to M/F/U/Other"
+              name="DER_GenderStandardization"
+              usesDispositions="true">
+              <inputs>
+                <input refId="Package\DFT_TransformMembers\DER_GenderStandardization.Inputs[Derived Column Input]"
+                  name="Derived Column Input">
+                  <inputColumns>
+                    <inputColumn refId="Package\DFT_TransformMembers\DER_GenderStandardization.Inputs[Derived Column Input].Columns[gender]"
+                      cachedDataType="wstr"
+                      cachedLength="10"
+                      cachedName="gender"
+                      lineageId="Package\DFT_TransformMembers\SRC_Member.Outputs[OLE DB Source Output].Columns[gender]"/>
+                  </inputColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT_TransformMembers\DER_GenderStandardization.Outputs[Derived Column Output]"
+                  name="Derived Column Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DFT_TransformMembers\DER_GenderStandardization.Outputs[Derived Column Output].Columns[gender_standardized]"
+                      dataType="wstr"
+                      length="10"
+                      lineageId="Package\DFT_TransformMembers\DER_GenderStandardization.Outputs[Derived Column Output].Columns[gender_standardized]"
+                      name="gender_standardized">
+                      <properties>
+                        <property name="Expression" dataType="System.String">UPPER(TRIM(gender)) == "M" || UPPER(TRIM(gender)) == "MALE" ? "M" :
+(UPPER(TRIM(gender)) == "F" || UPPER(TRIM(gender)) == "FEMALE" ? "F" :
+(UPPER(TRIM(gender)) == "U" || UPPER(TRIM(gender)) == "UNKNOWN" || ISNULL(gender) ? "U" : "Other"))</property>
+                        <property name="FriendlyExpression" dataType="System.String">Standardize gender to M/F/U/Other</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                </output>
+              </outputs>
+            </component>
+
+            <!-- Derived Column: Zip Code Standardization -->
+            <component
+              refId="Package\DFT_TransformMembers\DER_ZipCodeStandardization"
+              componentClassID="Microsoft.DerivedColumn"
+              contactInfo="Derived Column Transformation"
+              description="Standardize zip codes to 5 digit or ZIP+4 format"
+              name="DER_ZipCodeStandardization"
+              usesDispositions="true">
+              <inputs>
+                <input refId="Package\DFT_TransformMembers\DER_ZipCodeStandardization.Inputs[Derived Column Input]"
+                  name="Derived Column Input">
+                  <inputColumns>
+                    <inputColumn refId="Package\DFT_TransformMembers\DER_ZipCodeStandardization.Inputs[Derived Column Input].Columns[zip_code]"
+                      cachedDataType="wstr"
+                      cachedLength="10"
+                      cachedName="zip_code"
+                      lineageId="Package\DFT_TransformMembers\SRC_Member.Outputs[OLE DB Source Output].Columns[zip_code]"/>
+                  </inputColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT_TransformMembers\DER_ZipCodeStandardization.Outputs[Derived Column Output]"
+                  name="Derived Column Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DFT_TransformMembers\DER_ZipCodeStandardization.Outputs[Derived Column Output].Columns[zip_code_standardized]"
+                      dataType="wstr"
+                      length="10"
+                      lineageId="Package\DFT_TransformMembers\DER_ZipCodeStandardization.Outputs[Derived Column Output].Columns[zip_code_standardized]"
+                      name="zip_code_standardized">
+                      <properties>
+                        <property name="Expression" dataType="System.String">LEN(REPLACE(REPLACE(TRIM(zip_code),"-","")," ","")) == 9 ?
+  SUBSTRING(REPLACE(REPLACE(TRIM(zip_code),"-","")," ",""),1,5) + "-" + SUBSTRING(REPLACE(REPLACE(TRIM(zip_code),"-","")," ",""),6,4) :
+  (LEN(REPLACE(REPLACE(TRIM(zip_code),"-","")," ","")) >= 5 ?
+    SUBSTRING(REPLACE(REPLACE(TRIM(zip_code),"-","")," ",""),1,5) :
+    RIGHT("00000" + REPLACE(REPLACE(TRIM(zip_code),"-","")," ",""),5))</property>
+                        <property name="FriendlyExpression" dataType="System.String">Standardize zip to 5-digit or ZIP+4 format</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                </output>
+              </outputs>
+            </component>
+
+            <!-- Row Count: Members -->
+            <component
+              refId="Package\DFT_TransformMembers\RC_Members"
+              componentClassID="Microsoft.RowCount"
+              description="Count member rows processed"
+              name="RC_Members">
+              <properties>
+                <property name="VariableName" dataType="System.String">User::RowCount_Members</property>
+              </properties>
+              <inputs>
+                <input refId="Package\DFT_TransformMembers\RC_Members.Inputs[Row Count Input 1]" name="Row Count Input 1"/>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT_TransformMembers\RC_Members.Outputs[Row Count Output 1]" name="Row Count Output 1" synchronousInputId="Package\DFT_TransformMembers\RC_Members.Inputs[Row Count Input 1]"/>
+              </outputs>
+            </component>
+
+            <!-- Destination: Transformed Members -->
+            <component
+              refId="Package\DFT_TransformMembers\DST_TransformedMembers"
+              componentClassID="Microsoft.OLEDBDestination"
+              contactInfo="OLE DB Destination"
+              description="Load transformed member data"
+              name="DST_TransformedMembers"
+              usesDispositions="true"
+              version="4">
+              <properties>
+                <property name="CommandTimeout" dataType="System.Int32">0</property>
+                <property name="OpenRowset" dataType="System.String">dbo.member_transformed</property>
+                <property name="AccessMode" dataType="System.Int32">3</property>
+                <property name="FastLoadKeepIdentity" dataType="System.Boolean">false</property>
+                <property name="FastLoadKeepNulls" dataType="System.Boolean">false</property>
+                <property name="FastLoadMaxInsertCommitSize" dataType="System.Int32">2147483647</property>
+                <property name="FastLoadOptions" dataType="System.String">TABLOCK,CHECK_CONSTRAINTS</property>
+              </properties>
+              <connections>
+                <connection refId="Package\DFT_TransformMembers\DST_TransformedMembers.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[TargetDB]"
+                  connectionManagerRefId="Package.ConnectionManagers[TargetDB]"
+                  name="OleDbConnection"/>
+              </connections>
+              <inputs>
+                <input refId="Package\DFT_TransformMembers\DST_TransformedMembers.Inputs[OLE DB Destination Input]" name="OLE DB Destination Input">
+                  <inputColumns>
+                    <inputColumn refId="Package\DFT_TransformMembers\DST_TransformedMembers.Inputs[OLE DB Destination Input].Columns[member_id]" externalMetadataColumnId="Package\DFT_TransformMembers\DST_TransformedMembers.Inputs[OLE DB Destination Input].ExternalColumns[member_id]" lineageId="Package\DFT_TransformMembers\SRC_Member.Outputs[OLE DB Source Output].Columns[member_id]"/>
+                    <inputColumn refId="Package\DFT_TransformMembers\DST_TransformedMembers.Inputs[OLE DB Destination Input].Columns[gender_standardized]" externalMetadataColumnId="Package\DFT_TransformMembers\DST_TransformedMembers.Inputs[OLE DB Destination Input].ExternalColumns[gender_cd]" lineageId="Package\DFT_TransformMembers\DER_GenderStandardization.Outputs[Derived Column Output].Columns[gender_standardized]"/>
+                    <inputColumn refId="Package\DFT_TransformMembers\DST_TransformedMembers.Inputs[OLE DB Destination Input].Columns[zip_code_standardized]" externalMetadataColumnId="Package\DFT_TransformMembers\DST_TransformedMembers.Inputs[OLE DB Destination Input].ExternalColumns[zip_code]" lineageId="Package\DFT_TransformMembers\DER_ZipCodeStandardization.Outputs[Derived Column Output].Columns[zip_code_standardized]"/>
+                  </inputColumns>
+                </input>
+              </inputs>
+            </component>
+
+          </components>
+
+          <!-- Data Flow Paths for Member Transform -->
+          <paths>
+            <path refId="Package\DFT_TransformMembers.Paths[Source to Gender]"
+              endId="Package\DFT_TransformMembers\DER_GenderStandardization.Inputs[Derived Column Input]"
+              name="Source to Gender"
+              startId="Package\DFT_TransformMembers\SRC_Member.Outputs[OLE DB Source Output]"/>
+            <path refId="Package\DFT_TransformMembers.Paths[Gender to Zip]"
+              endId="Package\DFT_TransformMembers\DER_ZipCodeStandardization.Inputs[Derived Column Input]"
+              name="Gender to Zip"
+              startId="Package\DFT_TransformMembers\DER_GenderStandardization.Outputs[Derived Column Output]"/>
+            <path refId="Package\DFT_TransformMembers.Paths[Zip to RowCount]"
+              endId="Package\DFT_TransformMembers\RC_Members.Inputs[Row Count Input 1]"
+              name="Zip to RowCount"
+              startId="Package\DFT_TransformMembers\DER_ZipCodeStandardization.Outputs[Derived Column Output]"/>
+            <path refId="Package\DFT_TransformMembers.Paths[RowCount to Destination]"
+              endId="Package\DFT_TransformMembers\DST_TransformedMembers.Inputs[OLE DB Destination Input]"
+              name="RowCount to Destination"
+              startId="Package\DFT_TransformMembers\RC_Members.Outputs[Row Count Output 1]"/>
+          </paths>
+        </pipeline>
+      </DTS:ObjectData>
+    </DTS:Executable>
+
+    <!-- ========================================== -->
+    <!-- TASK 2: Data Flow - Transform Claims with NPI Lookup -->
+    <!-- ========================================== -->
+    <DTS:Executable
+      DTS:refId="Package\DFT_TransformClaims"
+      DTS:CreationName="Microsoft.Pipeline"
+      DTS:Description="Read and transform claims data with provider NPI lookup"
+      DTS:DTSID="{DFT00002-0002-0002-0002-000000000002}"
+      DTS:ExecutableType="Microsoft.Pipeline"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="DFT_TransformClaims"
+      DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation">
+
+      <DTS:ObjectData>
+        <pipeline version="1">
+          <components>
+
+            <!-- Source: Claims 837 Table -->
+            <component
+              refId="Package\DFT_TransformClaims\SRC_Claims837"
+              componentClassID="Microsoft.OLEDBSource"
+              contactInfo="OLE DB Source"
+              description="OLE DB Source - Claims 837 Table"
+              name="SRC_Claims837"
+              usesDispositions="true"
+              version="7">
+              <properties>
+                <property name="CommandTimeout" dataType="System.Int32">0</property>
+                <property name="AccessMode" dataType="System.Int32">2</property>
+                <property name="SqlCommand" dataType="System.String">SELECT
+    claim_id,
+    member_id,
+    patient_control_number,
+    provider_npi,
+    billing_provider,
+    claim_status,
+    total_charge_amount,
+    paid_amount,
+    service_date_start,
+    service_date_end,
+    diagnosis_code1,
+    diagnosis_code2,
+    procedure_code1,
+    procedure_code2,
+    claim_frequency,
+    prior_auth_number,
+    created_timestamp,
+    updated_timestamp
+FROM dbo.claims_837</property>
+              </properties>
+              <connections>
+                <connection refId="Package\DFT_TransformClaims\SRC_Claims837.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[SourceDB]"
+                  connectionManagerRefId="Package.ConnectionManagers[SourceDB]"
+                  name="OleDbConnection"/>
+              </connections>
+              <outputs>
+                <output refId="Package\DFT_TransformClaims\SRC_Claims837.Outputs[OLE DB Source Output]"
+                  name="OLE DB Source Output">
+                  <outputColumns>
+                    <outputColumn refId="Package\DFT_TransformClaims\SRC_Claims837.Outputs[OLE DB Source Output].Columns[claim_id]" dataType="wstr" length="50" name="claim_id"/>
+                    <outputColumn refId="Package\DFT_TransformClaims\SRC_Claims837.Outputs[OLE DB Source Output].Columns[member_id]" dataType="wstr" length="50" name="member_id"/>
+                    <outputColumn refId="Package\DFT_TransformClaims\SRC_Claims837.Outputs[OLE DB Source Output].Columns[patient_control_number]" dataType="wstr" length="50" name="patient_control_number"/>
+                    <outputColumn refId="Package\DFT_TransformClaims\SRC_Claims837.Outputs[OLE DB Source Output].Columns[provider_npi]" dataType="wstr" length="20" name="provider_npi"/>
+                    <outputColumn refId="Package\DFT_TransformClaims\SRC_Claims837.Outputs[OLE DB Source Output].Columns[billing_provider]" dataType="wstr" length="100" name="billing_provider"/>
+                    <outputColumn refId="Package\DFT_TransformClaims\SRC_Claims837.Outputs[OLE DB Source Output].Columns[claim_status]" dataType="wstr" length="10" name="claim_status"/>
+                    <outputColumn refId="Package\DFT_TransformClaims\SRC_Claims837.Outputs[OLE DB Source Output].Columns[total_charge_amount]" dataType="numeric" precision="10" scale="2" name="total_charge_amount"/>
+                    <outputColumn refId="Package\DFT_TransformClaims\SRC_Claims837.Outputs[OLE DB Source Output].Columns[paid_amount]" dataType="numeric" precision="10" scale="2" name="paid_amount"/>
+                    <outputColumn refId="Package\DFT_TransformClaims\SRC_Claims837.Outputs[OLE DB Source Output].Columns[service_date_start]" dataType="dbDate" name="service_date_start"/>
+                    <outputColumn refId="Package\DFT_TransformClaims\SRC_Claims837.Outputs[OLE DB Source Output].Columns[service_date_end]" dataType="dbDate" name="service_date_end"/>
+                    <outputColumn refId="Package\DFT_TransformClaims\SRC_Claims837.Outputs[OLE DB Source Output].Columns[diagnosis_code1]" dataType="wstr" length="20" name="diagnosis_code1"/>
+                    <outputColumn refId="Package\DFT_TransformClaims\SRC_Claims837.Outputs[OLE DB Source Output].Columns[diagnosis_code2]" dataType="wstr" length="20" name="diagnosis_code2"/>
+                    <outputColumn refId="Package\DFT_TransformClaims\SRC_Claims837.Outputs[OLE DB Source Output].Columns[procedure_code1]" dataType="wstr" length="20" name="procedure_code1"/>
+                    <outputColumn refId="Package\DFT_TransformClaims\SRC_Claims837.Outputs[OLE DB Source Output].Columns[procedure_code2]" dataType="wstr" length="20" name="procedure_code2"/>
+                    <outputColumn refId="Package\DFT_TransformClaims\SRC_Claims837.Outputs[OLE DB Source Output].Columns[claim_frequency]" dataType="wstr" length="5" name="claim_frequency"/>
+                    <outputColumn refId="Package\DFT_TransformClaims\SRC_Claims837.Outputs[OLE DB Source Output].Columns[prior_auth_number]" dataType="wstr" length="50" name="prior_auth_number"/>
+                    <outputColumn refId="Package\DFT_TransformClaims\SRC_Claims837.Outputs[OLE DB Source Output].Columns[created_timestamp]" dataType="dbTimeStamp" name="created_timestamp"/>
+                    <outputColumn refId="Package\DFT_TransformClaims\SRC_Claims837.Outputs[OLE DB Source Output].Columns[updated_timestamp]" dataType="dbTimeStamp" name="updated_timestamp"/>
+                  </outputColumns>
+                </output>
+              </outputs>
+            </component>
+
+            <!-- Lookup: Provider NPI to Provider Name -->
+            <component
+              refId="Package\DFT_TransformClaims\LKP_ProviderNPI"
+              componentClassID="Microsoft.Lookup"
+              contactInfo="Lookup Transformation"
+              description="Lookup provider name from NPI registry"
+              name="LKP_ProviderNPI"
+              usesDispositions="true"
+              version="6">
+              <properties>
+                <property name="CacheType" dataType="System.Int32">0</property>
+                <property name="NoMatchBehavior" dataType="System.Int32">1</property>
+                <property name="NoMatchCachePercentage" dataType="System.Int32">0</property>
+                <property name="MaxMemoryUsage" dataType="System.Int32">25</property>
+                <property name="MaxMemoryUsage64" dataType="System.Int64">25</property>
+                <property name="ReferenceMetadataXml" dataType="System.String">&lt;referenceColumns&gt;&lt;referenceColumn name="npi" dataType="DT_WSTR" length="10" /&gt;&lt;referenceColumn name="provider_name" dataType="DT_WSTR" length="200" /&gt;&lt;referenceColumn name="provider_type" dataType="DT_WSTR" length="50" /&gt;&lt;referenceColumn name="taxonomy_code" dataType="DT_WSTR" length="20" /&gt;&lt;/referenceColumns&gt;</property>
+                <property name="SqlCommand" dataType="System.String">SELECT
+    npi,
+    provider_organization_name + COALESCE(' - ' + provider_first_name + ' ' + provider_last_name, '') AS provider_name,
+    entity_type_code AS provider_type,
+    healthcare_provider_taxonomy_code_1 AS taxonomy_code
+FROM dbo.npi_registry
+WHERE npi IS NOT NULL</property>
+                <property name="SqlCommandParam" dataType="System.String"></property>
+                <property name="ParameterMap" dataType="System.String"></property>
+                <property name="DefaultCodePage" dataType="System.Int32">1252</property>
+                <property name="TreatDuplicateKeysAsError" dataType="System.Boolean">false</property>
+              </properties>
+              <connections>
+                <connection refId="Package\DFT_TransformClaims\LKP_ProviderNPI.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[NPILookupDB]"
+                  connectionManagerRefId="Package.ConnectionManagers[NPILookupDB]"
+                  name="OleDbConnection"/>
+              </connections>
+              <inputs>
+                <input refId="Package\DFT_TransformClaims\LKP_ProviderNPI.Inputs[Lookup Input]"
+                  name="Lookup Input">
+                  <inputColumns>
+                    <inputColumn refId="Package\DFT_TransformClaims\LKP_ProviderNPI.Inputs[Lookup Input].Columns[provider_npi]"
+                      cachedDataType="wstr"
+                      cachedLength="20"
+                      cachedName="provider_npi"
+                      lineageId="Package\DFT_TransformClaims\SRC_Claims837.Outputs[OLE DB Source Output].Columns[provider_npi]">
+                      <properties>
+                        <property name="JoinToReferenceColumn" dataType="System.String">npi</property>
+                        <property name="CopyFromReferenceColumn" dataType="System.String"></property>
+                      </properties>
+                    </inputColumn>
+                  </inputColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT_TransformClaims\LKP_ProviderNPI.Outputs[Lookup Match Output]"
+                  name="Lookup Match Output">
+                  <outputColumns>
+                    <outputColumn refId="Package\DFT_TransformClaims\LKP_ProviderNPI.Outputs[Lookup Match Output].Columns[provider_name_standardized]"
+                      dataType="wstr"
+                      length="200"
+                      lineageId="Package\DFT_TransformClaims\LKP_ProviderNPI.Outputs[Lookup Match Output].Columns[provider_name_standardized]"
+                      name="provider_name_standardized">
+                      <properties>
+                        <property name="CopyFromReferenceColumn" dataType="System.String">provider_name</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn refId="Package\DFT_TransformClaims\LKP_ProviderNPI.Outputs[Lookup Match Output].Columns[provider_type]"
+                      dataType="wstr"
+                      length="50"
+                      lineageId="Package\DFT_TransformClaims\LKP_ProviderNPI.Outputs[Lookup Match Output].Columns[provider_type]"
+                      name="provider_type">
+                      <properties>
+                        <property name="CopyFromReferenceColumn" dataType="System.String">provider_type</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                </output>
+                <output refId="Package\DFT_TransformClaims\LKP_ProviderNPI.Outputs[Lookup No Match Output]"
+                  name="Lookup No Match Output"/>
+              </outputs>
+            </component>
+
+            <!-- Derived Column: Inpatient Flag for Claims -->
+            <component
+              refId="Package\DFT_TransformClaims\DER_ClaimType"
+              componentClassID="Microsoft.DerivedColumn"
+              contactInfo="Derived Column Transformation"
+              description="Derive claim type flags (inpatient/outpatient)"
+              name="DER_ClaimType"
+              usesDispositions="true">
+              <inputs>
+                <input refId="Package\DFT_TransformClaims\DER_ClaimType.Inputs[Derived Column Input]"
+                  name="Derived Column Input">
+                  <inputColumns>
+                    <inputColumn refId="Package\DFT_TransformClaims\DER_ClaimType.Inputs[Derived Column Input].Columns[claim_frequency]"
+                      cachedDataType="wstr"
+                      cachedLength="5"
+                      cachedName="claim_frequency"
+                      lineageId="Package\DFT_TransformClaims\SRC_Claims837.Outputs[OLE DB Source Output].Columns[claim_frequency]"/>
+                    <inputColumn refId="Package\DFT_TransformClaims\DER_ClaimType.Inputs[Derived Column Input].Columns[procedure_code1]"
+                      cachedDataType="wstr"
+                      cachedLength="20"
+                      cachedName="procedure_code1"
+                      lineageId="Package\DFT_TransformClaims\SRC_Claims837.Outputs[OLE DB Source Output].Columns[procedure_code1]"/>
+                  </inputColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT_TransformClaims\DER_ClaimType.Outputs[Derived Column Output]"
+                  name="Derived Column Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DFT_TransformClaims\DER_ClaimType.Outputs[Derived Column Output].Columns[is_inpatient]"
+                      dataType="bool"
+                      lineageId="Package\DFT_TransformClaims\DER_ClaimType.Outputs[Derived Column Output].Columns[is_inpatient]"
+                      name="is_inpatient">
+                      <properties>
+                        <property name="Expression" dataType="System.String">claim_frequency == "1" || claim_frequency == "7" || (SUBSTRING(procedure_code1,1,2) >= "99" &amp;&amp; SUBSTRING(procedure_code1,1,3) &lt;= "99223")</property>
+                        <property name="FriendlyExpression" dataType="System.String">Identify inpatient claims based on frequency code and procedure codes</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\DFT_TransformClaims\DER_ClaimType.Outputs[Derived Column Output].Columns[claim_year]"
+                      dataType="i4"
+                      lineageId="Package\DFT_TransformClaims\DER_ClaimType.Outputs[Derived Column Output].Columns[claim_year]"
+                      name="claim_year">
+                      <properties>
+                        <property name="Expression" dataType="System.String">YEAR(service_date_start)</property>
+                        <property name="FriendlyExpression" dataType="System.String">Extract year from service date for patient journey</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                </output>
+              </outputs>
+            </component>
+
+            <!-- Union All: Combine matched and unmatched NPI lookups -->
+            <component
+              refId="Package\DFT_TransformClaims\UNION_ProviderResults"
+              componentClassID="Microsoft.UnionAll"
+              description="Combine matched and unmatched provider lookups"
+              name="UNION_ProviderResults">
+              <inputs>
+                <input refId="Package\DFT_TransformClaims\UNION_ProviderResults.Inputs[Union All Input 1]" name="Union All Input 1"/>
+                <input refId="Package\DFT_TransformClaims\UNION_ProviderResults.Inputs[Union All Input 2]" name="Union All Input 2"/>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT_TransformClaims\UNION_ProviderResults.Outputs[Union All Output 1]" name="Union All Output 1"/>
+              </outputs>
+            </component>
+
+            <!-- Row Count: Claims -->
+            <component
+              refId="Package\DFT_TransformClaims\RC_Claims"
+              componentClassID="Microsoft.RowCount"
+              description="Count claims rows processed"
+              name="RC_Claims">
+              <properties>
+                <property name="VariableName" dataType="System.String">User::RowCount_Claims</property>
+              </properties>
+              <inputs>
+                <input refId="Package\DFT_TransformClaims\RC_Claims.Inputs[Row Count Input 1]" name="Row Count Input 1"/>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT_TransformClaims\RC_Claims.Outputs[Row Count Output 1]" name="Row Count Output 1" synchronousInputId="Package\DFT_TransformClaims\RC_Claims.Inputs[Row Count Input 1]"/>
+              </outputs>
+            </component>
+
+            <!-- Destination: Transformed Claims -->
+            <component
+              refId="Package\DFT_TransformClaims\DST_TransformedClaims"
+              componentClassID="Microsoft.OLEDBDestination"
+              contactInfo="OLE DB Destination"
+              description="Load transformed claims data"
+              name="DST_TransformedClaims"
+              usesDispositions="true"
+              version="4">
+              <properties>
+                <property name="CommandTimeout" dataType="System.Int32">0</property>
+                <property name="OpenRowset" dataType="System.String">dbo.claims_transformed</property>
+                <property name="AccessMode" dataType="System.Int32">3</property>
+                <property name="FastLoadKeepIdentity" dataType="System.Boolean">false</property>
+                <property name="FastLoadKeepNulls" dataType="System.Boolean">false</property>
+                <property name="FastLoadMaxInsertCommitSize" dataType="System.Int32">2147483647</property>
+                <property name="FastLoadOptions" dataType="System.String">TABLOCK,CHECK_CONSTRAINTS</property>
+              </properties>
+              <connections>
+                <connection refId="Package\DFT_TransformClaims\DST_TransformedClaims.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[TargetDB]"
+                  connectionManagerRefId="Package.ConnectionManagers[TargetDB]"
+                  name="OleDbConnection"/>
+              </connections>
+              <inputs>
+                <input refId="Package\DFT_TransformClaims\DST_TransformedClaims.Inputs[OLE DB Destination Input]" name="OLE DB Destination Input"/>
+              </inputs>
+            </component>
+
+          </components>
+
+          <!-- Data Flow Paths for Claims Transform -->
+          <paths>
+            <path refId="Package\DFT_TransformClaims.Paths[Source to NPI Lookup]"
+              endId="Package\DFT_TransformClaims\LKP_ProviderNPI.Inputs[Lookup Input]"
+              name="Source to NPI Lookup"
+              startId="Package\DFT_TransformClaims\SRC_Claims837.Outputs[OLE DB Source Output]"/>
+            <path refId="Package\DFT_TransformClaims.Paths[NPI Match to ClaimType]"
+              endId="Package\DFT_TransformClaims\DER_ClaimType.Inputs[Derived Column Input]"
+              name="NPI Match to ClaimType"
+              startId="Package\DFT_TransformClaims\LKP_ProviderNPI.Outputs[Lookup Match Output]"/>
+            <path refId="Package\DFT_TransformClaims.Paths[NPI NoMatch to Union]"
+              endId="Package\DFT_TransformClaims\UNION_ProviderResults.Inputs[Union All Input 2]"
+              name="NPI NoMatch to Union"
+              startId="Package\DFT_TransformClaims\LKP_ProviderNPI.Outputs[Lookup No Match Output]"/>
+            <path refId="Package\DFT_TransformClaims.Paths[ClaimType to Union]"
+              endId="Package\DFT_TransformClaims\UNION_ProviderResults.Inputs[Union All Input 1]"
+              name="ClaimType to Union"
+              startId="Package\DFT_TransformClaims\DER_ClaimType.Outputs[Derived Column Output]"/>
+            <path refId="Package\DFT_TransformClaims.Paths[Union to RowCount]"
+              endId="Package\DFT_TransformClaims\RC_Claims.Inputs[Row Count Input 1]"
+              name="Union to RowCount"
+              startId="Package\DFT_TransformClaims\UNION_ProviderResults.Outputs[Union All Output 1]"/>
+            <path refId="Package\DFT_TransformClaims.Paths[RowCount to Destination]"
+              endId="Package\DFT_TransformClaims\DST_TransformedClaims.Inputs[OLE DB Destination Input]"
+              name="RowCount to Destination"
+              startId="Package\DFT_TransformClaims\RC_Claims.Outputs[Row Count Output 1]"/>
+          </paths>
+        </pipeline>
+      </DTS:ObjectData>
+    </DTS:Executable>
+
+    <!-- ========================================== -->
+    <!-- TASK 3: Data Flow - Transform Pharmacy with NDC Standardization -->
+    <!-- ========================================== -->
+    <DTS:Executable
+      DTS:refId="Package\DFT_TransformPharmacy"
+      DTS:CreationName="Microsoft.Pipeline"
+      DTS:Description="Read and transform pharmacy data with NDC standardization"
+      DTS:DTSID="{DFT00003-0003-0003-0003-000000000003}"
+      DTS:ExecutableType="Microsoft.Pipeline"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="DFT_TransformPharmacy"
+      DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation">
+
+      <DTS:ObjectData>
+        <pipeline version="1">
+          <components>
+
+            <!-- Source: PBM Pharmacy Table -->
+            <component
+              refId="Package\DFT_TransformPharmacy\SRC_PBMPharmacy"
+              componentClassID="Microsoft.OLEDBSource"
+              contactInfo="OLE DB Source"
+              description="OLE DB Source - PBM Pharmacy Table"
+              name="SRC_PBMPharmacy"
+              usesDispositions="true"
+              version="7">
+              <properties>
+                <property name="CommandTimeout" dataType="System.Int32">0</property>
+                <property name="AccessMode" dataType="System.Int32">2</property>
+                <property name="SqlCommand" dataType="System.String">SELECT
+    rx_claim_id,
+    member_id,
+    rx_number,
+    ndc_code,
+    drug_name,
+    drug_strength,
+    quantity,
+    days_supply,
+    fill_date,
+    dispense_pharmacy_npi,
+    dispense_pharmacy_name,
+    ingredient_cost,
+    total_cost,
+    paid_amount,
+    bin,
+    pcin,
+    created_timestamp,
+    updated_timestamp
+FROM source.pbm_pharmacy</property>
+              </properties>
+              <connections>
+                <connection refId="Package\DFT_TransformPharmacy\SRC_PBMPharmacy.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[SourceDB]"
+                  connectionManagerRefId="Package.ConnectionManagers[SourceDB]"
+                  name="OleDbConnection"/>
+              </connections>
+              <outputs>
+                <output refId="Package\DFT_TransformPharmacy\SRC_PBMPharmacy.Outputs[OLE DB Source Output]"
+                  name="OLE DB Source Output">
+                  <outputColumns>
+                    <outputColumn refId="Package\DFT_TransformPharmacy\SRC_PBMPharmacy.Outputs[OLE DB Source Output].Columns[rx_claim_id]" dataType="wstr" length="50" name="rx_claim_id"/>
+                    <outputColumn refId="Package\DFT_TransformPharmacy\SRC_PBMPharmacy.Outputs[OLE DB Source Output].Columns[member_id]" dataType="wstr" length="50" name="member_id"/>
+                    <outputColumn refId="Package\DFT_TransformPharmacy\SRC_PBMPharmacy.Outputs[OLE DB Source Output].Columns[rx_number]" dataType="wstr" length="50" name="rx_number"/>
+                    <outputColumn refId="Package\DFT_TransformPharmacy\SRC_PBMPharmacy.Outputs[OLE DB Source Output].Columns[ndc_code]" dataType="wstr" length="20" name="ndc_code"/>
+                    <outputColumn refId="Package\DFT_TransformPharmacy\SRC_PBMPharmacy.Outputs[OLE DB Source Output].Columns[drug_name]" dataType="wstr" length="200" name="drug_name"/>
+                    <outputColumn refId="Package\DFT_TransformPharmacy\SRC_PBMPharmacy.Outputs[OLE DB Source Output].Columns[drug_strength]" dataType="wstr" length="50" name="drug_strength"/>
+                    <outputColumn refId="Package\DFT_TransformPharmacy\SRC_PBMPharmacy.Outputs[OLE DB Source Output].Columns[quantity]" dataType="numeric" precision="10" scale="3" name="quantity"/>
+                    <outputColumn refId="Package\DFT_TransformPharmacy\SRC_PBMPharmacy.Outputs[OLE DB Source Output].Columns[days_supply]" dataType="i4" name="days_supply"/>
+                    <outputColumn refId="Package\DFT_TransformPharmacy\SRC_PBMPharmacy.Outputs[OLE DB Source Output].Columns[fill_date]" dataType="dbDate" name="fill_date"/>
+                    <outputColumn refId="Package\DFT_TransformPharmacy\SRC_PBMPharmacy.Outputs[OLE DB Source Output].Columns[dispense_pharmacy_npi]" dataType="wstr" length="20" name="dispense_pharmacy_npi"/>
+                    <outputColumn refId="Package\DFT_TransformPharmacy\SRC_PBMPharmacy.Outputs[OLE DB Source Output].Columns[dispense_pharmacy_name]" dataType="wstr" length="200" name="dispense_pharmacy_name"/>
+                    <outputColumn refId="Package\DFT_TransformPharmacy\SRC_PBMPharmacy.Outputs[OLE DB Source Output].Columns[ingredient_cost]" dataType="numeric" precision="10" scale="2" name="ingredient_cost"/>
+                    <outputColumn refId="Package\DFT_TransformPharmacy\SRC_PBMPharmacy.Outputs[OLE DB Source Output].Columns[total_cost]" dataType="numeric" precision="10" scale="2" name="total_cost"/>
+                    <outputColumn refId="Package\DFT_TransformPharmacy\SRC_PBMPharmacy.Outputs[OLE DB Source Output].Columns[paid_amount]" dataType="numeric" precision="10" scale="2" name="paid_amount"/>
+                    <outputColumn refId="Package\DFT_TransformPharmacy\SRC_PBMPharmacy.Outputs[OLE DB Source Output].Columns[bin]" dataType="wstr" length="20" name="bin"/>
+                    <outputColumn refId="Package\DFT_TransformPharmacy\SRC_PBMPharmacy.Outputs[OLE DB Source Output].Columns[pcin]" dataType="wstr" length="50" name="pcin"/>
+                    <outputColumn refId="Package\DFT_TransformPharmacy\SRC_PBMPharmacy.Outputs[OLE DB Source Output].Columns[created_timestamp]" dataType="dbTimeStamp" name="created_timestamp"/>
+                    <outputColumn refId="Package\DFT_TransformPharmacy\SRC_PBMPharmacy.Outputs[OLE DB Source Output].Columns[updated_timestamp]" dataType="dbTimeStamp" name="updated_timestamp"/>
+                  </outputColumns>
+                </output>
+              </outputs>
+            </component>
+
+            <!-- Derived Column: NDC Code Standardization to 11 digits -->
+            <component
+              refId="Package\DFT_TransformPharmacy\DER_NDCStandardization"
+              componentClassID="Microsoft.DerivedColumn"
+              contactInfo="Derived Column Transformation"
+              description="Standardize NDC codes to 11-digit format (5-4-2)"
+              name="DER_NDCStandardization"
+              usesDispositions="true">
+              <inputs>
+                <input refId="Package\DFT_TransformPharmacy\DER_NDCStandardization.Inputs[Derived Column Input]"
+                  name="Derived Column Input">
+                  <inputColumns>
+                    <inputColumn refId="Package\DFT_TransformPharmacy\DER_NDCStandardization.Inputs[Derived Column Input].Columns[ndc_code]"
+                      cachedDataType="wstr"
+                      cachedLength="20"
+                      cachedName="ndc_code"
+                      lineageId="Package\DFT_TransformPharmacy\SRC_PBMPharmacy.Outputs[OLE DB Source Output].Columns[ndc_code]"/>
+                    <inputColumn refId="Package\DFT_TransformPharmacy\DER_NDCStandardization.Inputs[Derived Column Input].Columns[fill_date]"
+                      cachedDataType="dbDate"
+                      cachedName="fill_date"
+                      lineageId="Package\DFT_TransformPharmacy\SRC_PBMPharmacy.Outputs[OLE DB Source Output].Columns[fill_date]"/>
+                  </inputColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT_TransformPharmacy\DER_NDCStandardization.Outputs[Derived Column Output]"
+                  name="Derived Column Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DFT_TransformPharmacy\DER_NDCStandardization.Outputs[Derived Column Output].Columns[ndc_code_standardized]"
+                      dataType="wstr"
+                      length="11"
+                      lineageId="Package\DFT_TransformPharmacy\DER_NDCStandardization.Outputs[Derived Column Output].Columns[ndc_code_standardized]"
+                      name="ndc_code_standardized">
+                      <properties>
+                        <property name="Expression" dataType="System.String">RIGHT("00000000000" + REPLACE(REPLACE(REPLACE(TRIM(ndc_code),"-","")," ",""),"*",""),11)</property>
+                        <property name="FriendlyExpression" dataType="System.String">Standardize NDC to 11-digit format by removing hyphens/spaces and left-padding with zeros</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\DFT_TransformPharmacy\DER_NDCStandardization.Outputs[Derived Column Output].Columns[ndc_formatted]"
+                      dataType="wstr"
+                      length="13"
+                      lineageId="Package\DFT_TransformPharmacy\DER_NDCStandardization.Outputs[Derived Column Output].Columns[ndc_formatted]"
+                      name="ndc_formatted">
+                      <properties>
+                        <property name="Expression" dataType="System.String">SUBSTRING(RIGHT("00000000000" + REPLACE(REPLACE(REPLACE(TRIM(ndc_code),"-","")," ",""),"*",""),11),1,5) + "-" + SUBSTRING(RIGHT("00000000000" + REPLACE(REPLACE(REPLACE(TRIM(ndc_code),"-","")," ",""),"*",""),11),6,4) + "-" + SUBSTRING(RIGHT("00000000000" + REPLACE(REPLACE(REPLACE(TRIM(ndc_code),"-","")," ",""),"*",""),11),10,2)</property>
+                        <property name="FriendlyExpression" dataType="System.String">Format NDC as 5-4-2 with hyphens</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\DFT_TransformPharmacy\DER_NDCStandardization.Outputs[Derived Column Output].Columns[rx_year]"
+                      dataType="i4"
+                      lineageId="Package\DFT_TransformPharmacy\DER_NDCStandardization.Outputs[Derived Column Output].Columns[rx_year]"
+                      name="rx_year">
+                      <properties>
+                        <property name="Expression" dataType="System.String">YEAR(fill_date)</property>
+                        <property name="FriendlyExpression" dataType="System.String">Extract year from fill date for aggregation</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                </output>
+              </outputs>
+            </component>
+
+            <!-- Row Count: Pharmacy -->
+            <component
+              refId="Package\DFT_TransformPharmacy\RC_Pharmacy"
+              componentClassID="Microsoft.RowCount"
+              description="Count pharmacy rows processed"
+              name="RC_Pharmacy">
+              <properties>
+                <property name="VariableName" dataType="System.String">User::RowCount_Pharmacy</property>
+              </properties>
+              <inputs>
+                <input refId="Package\DFT_TransformPharmacy\RC_Pharmacy.Inputs[Row Count Input 1]" name="Row Count Input 1"/>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT_TransformPharmacy\RC_Pharmacy.Outputs[Row Count Output 1]" name="Row Count Output 1" synchronousInputId="Package\DFT_TransformPharmacy\RC_Pharmacy.Inputs[Row Count Input 1]"/>
+              </outputs>
+            </component>
+
+            <!-- Destination: Transformed Pharmacy -->
+            <component
+              refId="Package\DFT_TransformPharmacy\DST_TransformedPharmacy"
+              componentClassID="Microsoft.OLEDBDestination"
+              contactInfo="OLE DB Destination"
+              description="Load transformed pharmacy data"
+              name="DST_TransformedPharmacy"
+              usesDispositions="true"
+              version="4">
+              <properties>
+                <property name="CommandTimeout" dataType="System.Int32">0</property>
+                <property name="OpenRowset" dataType="System.String">dbo.pharmacy_transformed</property>
+                <property name="AccessMode" dataType="System.Int32">3</property>
+                <property name="FastLoadKeepIdentity" dataType="System.Boolean">false</property>
+                <property name="FastLoadKeepNulls" dataType="System.Boolean">false</property>
+                <property name="FastLoadMaxInsertCommitSize" dataType="System.Int32">2147483647</property>
+                <property name="FastLoadOptions" dataType="System.String">TABLOCK,CHECK_CONSTRAINTS</property>
+              </properties>
+              <connections>
+                <connection refId="Package\DFT_TransformPharmacy\DST_TransformedPharmacy.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[TargetDB]"
+                  connectionManagerRefId="Package.ConnectionManagers[TargetDB]"
+                  name="OleDbConnection"/>
+              </connections>
+              <inputs>
+                <input refId="Package\DFT_TransformPharmacy\DST_TransformedPharmacy.Inputs[OLE DB Destination Input]" name="OLE DB Destination Input"/>
+              </inputs>
+            </component>
+
+          </components>
+
+          <!-- Data Flow Paths for Pharmacy Transform -->
+          <paths>
+            <path refId="Package\DFT_TransformPharmacy.Paths[Source to NDC]"
+              endId="Package\DFT_TransformPharmacy\DER_NDCStandardization.Inputs[Derived Column Input]"
+              name="Source to NDC"
+              startId="Package\DFT_TransformPharmacy\SRC_PBMPharmacy.Outputs[OLE DB Source Output]"/>
+            <path refId="Package\DFT_TransformPharmacy.Paths[NDC to RowCount]"
+              endId="Package\DFT_TransformPharmacy\RC_Pharmacy.Inputs[Row Count Input 1]"
+              name="NDC to RowCount"
+              startId="Package\DFT_TransformPharmacy\DER_NDCStandardization.Outputs[Derived Column Output]"/>
+            <path refId="Package\DFT_TransformPharmacy.Paths[RowCount to Destination]"
+              endId="Package\DFT_TransformPharmacy\DST_TransformedPharmacy.Inputs[OLE DB Destination Input]"
+              name="RowCount to Destination"
+              startId="Package\DFT_TransformPharmacy\RC_Pharmacy.Outputs[Row Count Output 1]"/>
+          </paths>
+        </pipeline>
+      </DTS:ObjectData>
+    </DTS:Executable>
+
+    <!-- ========================================== -->
+    <!-- TASK 4: Data Flow - Member Claims Aggregation -->
+    <!-- ========================================== -->
+    <DTS:Executable
+      DTS:refId="Package\DFT_MemberClaimsAggregation"
+      DTS:CreationName="Microsoft.Pipeline"
+      DTS:Description="Aggregate claims data by member: total claims, inpatient claims, paid amounts"
+      DTS:DTSID="{DFT00004-0004-0004-0004-000000000004}"
+      DTS:ExecutableType="Microsoft.Pipeline"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="DFT_MemberClaimsAggregation"
+      DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation">
+
+      <DTS:ObjectData>
+        <pipeline version="1">
+          <components>
+
+            <!-- Source: Transformed Claims for Aggregation -->
+            <component
+              refId="Package\DFT_MemberClaimsAggregation\SRC_ClaimsForAgg"
+              componentClassID="Microsoft.OLEDBSource"
+              contactInfo="OLE DB Source"
+              description="Read transformed claims for aggregation"
+              name="SRC_ClaimsForAgg"
+              usesDispositions="true"
+              version="7">
+              <properties>
+                <property name="CommandTimeout" dataType="System.Int32">0</property>
+                <property name="AccessMode" dataType="System.Int32">2</property>
+                <property name="SqlCommand" dataType="System.String">SELECT
+    member_id,
+    claim_id,
+    is_inpatient,
+    paid_amount,
+    total_charge_amount,
+    service_date_start,
+    service_date_end,
+    claim_year
+FROM dbo.claims_transformed</property>
+              </properties>
+              <connections>
+                <connection refId="Package\DFT_MemberClaimsAggregation\SRC_ClaimsForAgg.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[TargetDB]"
+                  connectionManagerRefId="Package.ConnectionManagers[TargetDB]"
+                  name="OleDbConnection"/>
+              </connections>
+              <outputs>
+                <output refId="Package\DFT_MemberClaimsAggregation\SRC_ClaimsForAgg.Outputs[OLE DB Source Output]"
+                  name="OLE DB Source Output">
+                  <outputColumns>
+                    <outputColumn refId="Package\DFT_MemberClaimsAggregation\SRC_ClaimsForAgg.Outputs[OLE DB Source Output].Columns[member_id]" dataType="wstr" length="50" name="member_id"/>
+                    <outputColumn refId="Package\DFT_MemberClaimsAggregation\SRC_ClaimsForAgg.Outputs[OLE DB Source Output].Columns[claim_id]" dataType="wstr" length="50" name="claim_id"/>
+                    <outputColumn refId="Package\DFT_MemberClaimsAggregation\SRC_ClaimsForAgg.Outputs[OLE DB Source Output].Columns[is_inpatient]" dataType="bool" name="is_inpatient"/>
+                    <outputColumn refId="Package\DFT_MemberClaimsAggregation\SRC_ClaimsForAgg.Outputs[OLE DB Source Output].Columns[paid_amount]" dataType="numeric" precision="10" scale="2" name="paid_amount"/>
+                    <outputColumn refId="Package\DFT_MemberClaimsAggregation\SRC_ClaimsForAgg.Outputs[OLE DB Source Output].Columns[total_charge_amount]" dataType="numeric" precision="10" scale="2" name="total_charge_amount"/>
+                    <outputColumn refId="Package\DFT_MemberClaimsAggregation\SRC_ClaimsForAgg.Outputs[OLE DB Source Output].Columns[service_date_start]" dataType="dbDate" name="service_date_start"/>
+                    <outputColumn refId="Package\DFT_MemberClaimsAggregation\SRC_ClaimsForAgg.Outputs[OLE DB Source Output].Columns[service_date_end]" dataType="dbDate" name="service_date_end"/>
+                    <outputColumn refId="Package\DFT_MemberClaimsAggregation\SRC_ClaimsForAgg.Outputs[OLE DB Source Output].Columns[claim_year]" dataType="i4" name="claim_year"/>
+                  </outputColumns>
+                </output>
+              </outputs>
+            </component>
+
+            <!-- Derived Column: Inpatient Flag for Aggregation -->
+            <component
+              refId="Package\DFT_MemberClaimsAggregation\DER_InpatientFlag"
+              componentClassID="Microsoft.DerivedColumn"
+              contactInfo="Derived Column Transformation"
+              description="Create numeric inpatient flag for aggregation"
+              name="DER_InpatientFlag"
+              usesDispositions="true">
+              <inputs>
+                <input refId="Package\DFT_MemberClaimsAggregation\DER_InpatientFlag.Inputs[Derived Column Input]"
+                  name="Derived Column Input">
+                  <inputColumns>
+                    <inputColumn refId="Package\DFT_MemberClaimsAggregation\DER_InpatientFlag.Inputs[Derived Column Input].Columns[is_inpatient]"
+                      cachedDataType="bool"
+                      cachedName="is_inpatient"
+                      lineageId="Package\DFT_MemberClaimsAggregation\SRC_ClaimsForAgg.Outputs[OLE DB Source Output].Columns[is_inpatient]"/>
+                  </inputColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT_MemberClaimsAggregation\DER_InpatientFlag.Outputs[Derived Column Output]"
+                  name="Derived Column Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DFT_MemberClaimsAggregation\DER_InpatientFlag.Outputs[Derived Column Output].Columns[inpatient_count]"
+                      dataType="i4"
+                      lineageId="Package\DFT_MemberClaimsAggregation\DER_InpatientFlag.Outputs[Derived Column Output].Columns[inpatient_count]"
+                      name="inpatient_count">
+                      <properties>
+                        <property name="Expression" dataType="System.String">is_inpatient ? 1 : 0</property>
+                        <property name="FriendlyExpression" dataType="System.String">Convert boolean to int for SUM aggregation</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                </output>
+              </outputs>
+            </component>
+
+            <!-- Aggregate: Member Claims Summary -->
+            <component
+              refId="Package\DFT_MemberClaimsAggregation\AGG_MemberClaims"
+              componentClassID="Microsoft.Aggregate"
+              contactInfo="Aggregate Transformation"
+              description="Aggregate claims by member"
+              name="AGG_MemberClaims"
+              version="3">
+              <properties>
+                <property name="KeyDuplicates" dataType="System.Int32">0</property>
+                <property name="Keys" dataType="System.Int32">0</property>
+                <property name="CountDistinctKeys" dataType="System.Int32">0</property>
+                <property name="AutoExtendFactor" dataType="System.Int32">25</property>
+              </properties>
+              <inputs>
+                <input refId="Package\DFT_MemberClaimsAggregation\AGG_MemberClaims.Inputs[Aggregate Input 1]"
+                  name="Aggregate Input 1">
+                  <inputColumns>
+                    <inputColumn refId="Package\DFT_MemberClaimsAggregation\AGG_MemberClaims.Inputs[Aggregate Input 1].Columns[member_id]"
+                      cachedDataType="wstr"
+                      cachedLength="50"
+                      cachedName="member_id"
+                      lineageId="Package\DFT_MemberClaimsAggregation\SRC_ClaimsForAgg.Outputs[OLE DB Source Output].Columns[member_id]"/>
+                    <inputColumn refId="Package\DFT_MemberClaimsAggregation\AGG_MemberClaims.Inputs[Aggregate Input 1].Columns[claim_id]"
+                      cachedDataType="wstr"
+                      cachedLength="50"
+                      cachedName="claim_id"
+                      lineageId="Package\DFT_MemberClaimsAggregation\SRC_ClaimsForAgg.Outputs[OLE DB Source Output].Columns[claim_id]"/>
+                    <inputColumn refId="Package\DFT_MemberClaimsAggregation\AGG_MemberClaims.Inputs[Aggregate Input 1].Columns[paid_amount]"
+                      cachedDataType="numeric"
+                      cachedPrecision="10"
+                      cachedScale="2"
+                      cachedName="paid_amount"
+                      lineageId="Package\DFT_MemberClaimsAggregation\SRC_ClaimsForAgg.Outputs[OLE DB Source Output].Columns[paid_amount]"/>
+                    <inputColumn refId="Package\DFT_MemberClaimsAggregation\AGG_MemberClaims.Inputs[Aggregate Input 1].Columns[service_date_start]"
+                      cachedDataType="dbDate"
+                      cachedName="service_date_start"
+                      lineageId="Package\DFT_MemberClaimsAggregation\SRC_ClaimsForAgg.Outputs[OLE DB Source Output].Columns[service_date_start]"/>
+                    <inputColumn refId="Package\DFT_MemberClaimsAggregation\AGG_MemberClaims.Inputs[Aggregate Input 1].Columns[service_date_end]"
+                      cachedDataType="dbDate"
+                      cachedName="service_date_end"
+                      lineageId="Package\DFT_MemberClaimsAggregation\SRC_ClaimsForAgg.Outputs[OLE DB Source Output].Columns[service_date_end]"/>
+                    <inputColumn refId="Package\DFT_MemberClaimsAggregation\AGG_MemberClaims.Inputs[Aggregate Input 1].Columns[inpatient_count]"
+                      cachedDataType="i4"
+                      cachedName="inpatient_count"
+                      lineageId="Package\DFT_MemberClaimsAggregation\DER_InpatientFlag.Outputs[Derived Column Output].Columns[inpatient_count]"/>
+                  </inputColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT_MemberClaimsAggregation\AGG_MemberClaims.Outputs[Aggregate Output 1]"
+                  name="Aggregate Output 1">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DFT_MemberClaimsAggregation\AGG_MemberClaims.Outputs[Aggregate Output 1].Columns[member_id]"
+                      dataType="wstr"
+                      length="50"
+                      lineageId="Package\DFT_MemberClaimsAggregation\AGG_MemberClaims.Outputs[Aggregate Output 1].Columns[member_id]"
+                      name="member_id">
+                      <properties>
+                        <property name="AggregationType" dataType="System.Int32">0</property>
+                        <property name="AggregationColumnId" dataType="System.Int32">0</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\DFT_MemberClaimsAggregation\AGG_MemberClaims.Outputs[Aggregate Output 1].Columns[total_claims]"
+                      dataType="i4"
+                      lineageId="Package\DFT_MemberClaimsAggregation\AGG_MemberClaims.Outputs[Aggregate Output 1].Columns[total_claims]"
+                      name="total_claims">
+                      <properties>
+                        <property name="AggregationType" dataType="System.Int32">2</property>
+                        <property name="AggregationColumnId" dataType="System.Int32">1</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\DFT_MemberClaimsAggregation\AGG_MemberClaims.Outputs[Aggregate Output 1].Columns[inpatient_claims]"
+                      dataType="i8"
+                      lineageId="Package\DFT_MemberClaimsAggregation\AGG_MemberClaims.Outputs[Aggregate Output 1].Columns[inpatient_claims]"
+                      name="inpatient_claims">
+                      <properties>
+                        <property name="AggregationType" dataType="System.Int32">4</property>
+                        <property name="AggregationColumnId" dataType="System.Int32">5</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\DFT_MemberClaimsAggregation\AGG_MemberClaims.Outputs[Aggregate Output 1].Columns[total_paid_amount]"
+                      dataType="numeric"
+                      precision="18"
+                      scale="2"
+                      lineageId="Package\DFT_MemberClaimsAggregation\AGG_MemberClaims.Outputs[Aggregate Output 1].Columns[total_paid_amount]"
+                      name="total_paid_amount">
+                      <properties>
+                        <property name="AggregationType" dataType="System.Int32">4</property>
+                        <property name="AggregationColumnId" dataType="System.Int32">2</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\DFT_MemberClaimsAggregation\AGG_MemberClaims.Outputs[Aggregate Output 1].Columns[avg_paid_amount]"
+                      dataType="numeric"
+                      precision="18"
+                      scale="2"
+                      lineageId="Package\DFT_MemberClaimsAggregation\AGG_MemberClaims.Outputs[Aggregate Output 1].Columns[avg_paid_amount]"
+                      name="avg_paid_amount">
+                      <properties>
+                        <property name="AggregationType" dataType="System.Int32">5</property>
+                        <property name="AggregationColumnId" dataType="System.Int32">2</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\DFT_MemberClaimsAggregation\AGG_MemberClaims.Outputs[Aggregate Output 1].Columns[first_encounter_date]"
+                      dataType="dbDate"
+                      lineageId="Package\DFT_MemberClaimsAggregation\AGG_MemberClaims.Outputs[Aggregate Output 1].Columns[first_encounter_date]"
+                      name="first_encounter_date">
+                      <properties>
+                        <property name="AggregationType" dataType="System.Int32">6</property>
+                        <property name="AggregationColumnId" dataType="System.Int32">3</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\DFT_MemberClaimsAggregation\AGG_MemberClaims.Outputs[Aggregate Output 1].Columns[last_encounter_date]"
+                      dataType="dbDate"
+                      lineageId="Package\DFT_MemberClaimsAggregation\AGG_MemberClaims.Outputs[Aggregate Output 1].Columns[last_encounter_date]"
+                      name="last_encounter_date">
+                      <properties>
+                        <property name="AggregationType" dataType="System.Int32">7</property>
+                        <property name="AggregationColumnId" dataType="System.Int32">4</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                </output>
+              </outputs>
+            </component>
+
+            <!-- Destination: Member Claims Aggregation -->
+            <component
+              refId="Package\DFT_MemberClaimsAggregation\DST_MemberClaimsAgg"
+              componentClassID="Microsoft.OLEDBDestination"
+              contactInfo="OLE DB Destination"
+              description="Load member claims aggregation"
+              name="DST_MemberClaimsAgg"
+              usesDispositions="true"
+              version="4">
+              <properties>
+                <property name="CommandTimeout" dataType="System.Int32">0</property>
+                <property name="OpenRowset" dataType="System.String">dbo.member_claims_aggregation</property>
+                <property name="AccessMode" dataType="System.Int32">3</property>
+                <property name="FastLoadKeepIdentity" dataType="System.Boolean">false</property>
+                <property name="FastLoadKeepNulls" dataType="System.Boolean">false</property>
+                <property name="FastLoadMaxInsertCommitSize" dataType="System.Int32">2147483647</property>
+                <property name="FastLoadOptions" dataType="System.String">TABLOCK,CHECK_CONSTRAINTS</property>
+              </properties>
+              <connections>
+                <connection refId="Package\DFT_MemberClaimsAggregation\DST_MemberClaimsAgg.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[TargetDB]"
+                  connectionManagerRefId="Package.ConnectionManagers[TargetDB]"
+                  name="OleDbConnection"/>
+              </connections>
+              <inputs>
+                <input refId="Package\DFT_MemberClaimsAggregation\DST_MemberClaimsAgg.Inputs[OLE DB Destination Input]" name="OLE DB Destination Input"/>
+              </inputs>
+            </component>
+
+          </components>
+
+          <!-- Data Flow Paths for Member Claims Aggregation -->
+          <paths>
+            <path refId="Package\DFT_MemberClaimsAggregation.Paths[Source to DerivedFlag]"
+              endId="Package\DFT_MemberClaimsAggregation\DER_InpatientFlag.Inputs[Derived Column Input]"
+              name="Source to DerivedFlag"
+              startId="Package\DFT_MemberClaimsAggregation\SRC_ClaimsForAgg.Outputs[OLE DB Source Output]"/>
+            <path refId="Package\DFT_MemberClaimsAggregation.Paths[DerivedFlag to Aggregate]"
+              endId="Package\DFT_MemberClaimsAggregation\AGG_MemberClaims.Inputs[Aggregate Input 1]"
+              name="DerivedFlag to Aggregate"
+              startId="Package\DFT_MemberClaimsAggregation\DER_InpatientFlag.Outputs[Derived Column Output]"/>
+            <path refId="Package\DFT_MemberClaimsAggregation.Paths[Aggregate to Destination]"
+              endId="Package\DFT_MemberClaimsAggregation\DST_MemberClaimsAgg.Inputs[OLE DB Destination Input]"
+              name="Aggregate to Destination"
+              startId="Package\DFT_MemberClaimsAggregation\AGG_MemberClaims.Outputs[Aggregate Output 1]"/>
+          </paths>
+        </pipeline>
+      </DTS:ObjectData>
+    </DTS:Executable>
+
+    <!-- ========================================== -->
+    <!-- TASK 5: Data Flow - Pharmacy Aggregation -->
+    <!-- ========================================== -->
+    <DTS:Executable
+      DTS:refId="Package\DFT_PharmacyAggregation"
+      DTS:CreationName="Microsoft.Pipeline"
+      DTS:Description="Aggregate pharmacy data by member: total RX claims and costs"
+      DTS:DTSID="{DFT00005-0005-0005-0005-000000000005}"
+      DTS:ExecutableType="Microsoft.Pipeline"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="DFT_PharmacyAggregation"
+      DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation">
+
+      <DTS:ObjectData>
+        <pipeline version="1">
+          <components>
+
+            <!-- Source: Transformed Pharmacy for Aggregation -->
+            <component
+              refId="Package\DFT_PharmacyAggregation\SRC_PharmacyForAgg"
+              componentClassID="Microsoft.OLEDBSource"
+              contactInfo="OLE DB Source"
+              description="Read transformed pharmacy for aggregation"
+              name="SRC_PharmacyForAgg"
+              usesDispositions="true"
+              version="7">
+              <properties>
+                <property name="CommandTimeout" dataType="System.Int32">0</property>
+                <property name="AccessMode" dataType="System.Int32">2</property>
+                <property name="SqlCommand" dataType="System.String">SELECT
+    member_id,
+    rx_claim_id,
+    total_cost,
+    paid_amount,
+    ingredient_cost,
+    days_supply,
+    quantity,
+    rx_year
+FROM dbo.pharmacy_transformed</property>
+              </properties>
+              <connections>
+                <connection refId="Package\DFT_PharmacyAggregation\SRC_PharmacyForAgg.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[TargetDB]"
+                  connectionManagerRefId="Package.ConnectionManagers[TargetDB]"
+                  name="OleDbConnection"/>
+              </connections>
+              <outputs>
+                <output refId="Package\DFT_PharmacyAggregation\SRC_PharmacyForAgg.Outputs[OLE DB Source Output]"
+                  name="OLE DB Source Output">
+                  <outputColumns>
+                    <outputColumn refId="Package\DFT_PharmacyAggregation\SRC_PharmacyForAgg.Outputs[OLE DB Source Output].Columns[member_id]" dataType="wstr" length="50" name="member_id"/>
+                    <outputColumn refId="Package\DFT_PharmacyAggregation\SRC_PharmacyForAgg.Outputs[OLE DB Source Output].Columns[rx_claim_id]" dataType="wstr" length="50" name="rx_claim_id"/>
+                    <outputColumn refId="Package\DFT_PharmacyAggregation\SRC_PharmacyForAgg.Outputs[OLE DB Source Output].Columns[total_cost]" dataType="numeric" precision="10" scale="2" name="total_cost"/>
+                    <outputColumn refId="Package\DFT_PharmacyAggregation\SRC_PharmacyForAgg.Outputs[OLE DB Source Output].Columns[paid_amount]" dataType="numeric" precision="10" scale="2" name="paid_amount"/>
+                    <outputColumn refId="Package\DFT_PharmacyAggregation\SRC_PharmacyForAgg.Outputs[OLE DB Source Output].Columns[ingredient_cost]" dataType="numeric" precision="10" scale="2" name="ingredient_cost"/>
+                    <outputColumn refId="Package\DFT_PharmacyAggregation\SRC_PharmacyForAgg.Outputs[OLE DB Source Output].Columns[days_supply]" dataType="i4" name="days_supply"/>
+                    <outputColumn refId="Package\DFT_PharmacyAggregation\SRC_PharmacyForAgg.Outputs[OLE DB Source Output].Columns[quantity]" dataType="numeric" precision="10" scale="3" name="quantity"/>
+                    <outputColumn refId="Package\DFT_PharmacyAggregation\SRC_PharmacyForAgg.Outputs[OLE DB Source Output].Columns[rx_year]" dataType="i4" name="rx_year"/>
+                  </outputColumns>
+                </output>
+              </outputs>
+            </component>
+
+            <!-- Aggregate: Pharmacy Summary by Member -->
+            <component
+              refId="Package\DFT_PharmacyAggregation\AGG_Pharmacy"
+              componentClassID="Microsoft.Aggregate"
+              contactInfo="Aggregate Transformation"
+              description="Aggregate pharmacy claims by member"
+              name="AGG_Pharmacy"
+              version="3">
+              <properties>
+                <property name="KeyDuplicates" dataType="System.Int32">0</property>
+                <property name="Keys" dataType="System.Int32">0</property>
+                <property name="CountDistinctKeys" dataType="System.Int32">0</property>
+                <property name="AutoExtendFactor" dataType="System.Int32">25</property>
+              </properties>
+              <inputs>
+                <input refId="Package\DFT_PharmacyAggregation\AGG_Pharmacy.Inputs[Aggregate Input 1]"
+                  name="Aggregate Input 1">
+                  <inputColumns>
+                    <inputColumn refId="Package\DFT_PharmacyAggregation\AGG_Pharmacy.Inputs[Aggregate Input 1].Columns[member_id]"
+                      cachedDataType="wstr"
+                      cachedLength="50"
+                      cachedName="member_id"
+                      lineageId="Package\DFT_PharmacyAggregation\SRC_PharmacyForAgg.Outputs[OLE DB Source Output].Columns[member_id]"/>
+                    <inputColumn refId="Package\DFT_PharmacyAggregation\AGG_Pharmacy.Inputs[Aggregate Input 1].Columns[rx_claim_id]"
+                      cachedDataType="wstr"
+                      cachedLength="50"
+                      cachedName="rx_claim_id"
+                      lineageId="Package\DFT_PharmacyAggregation\SRC_PharmacyForAgg.Outputs[OLE DB Source Output].Columns[rx_claim_id]"/>
+                    <inputColumn refId="Package\DFT_PharmacyAggregation\AGG_Pharmacy.Inputs[Aggregate Input 1].Columns[total_cost]"
+                      cachedDataType="numeric"
+                      cachedPrecision="10"
+                      cachedScale="2"
+                      cachedName="total_cost"
+                      lineageId="Package\DFT_PharmacyAggregation\SRC_PharmacyForAgg.Outputs[OLE DB Source Output].Columns[total_cost]"/>
+                    <inputColumn refId="Package\DFT_PharmacyAggregation\AGG_Pharmacy.Inputs[Aggregate Input 1].Columns[paid_amount]"
+                      cachedDataType="numeric"
+                      cachedPrecision="10"
+                      cachedScale="2"
+                      cachedName="paid_amount"
+                      lineageId="Package\DFT_PharmacyAggregation\SRC_PharmacyForAgg.Outputs[OLE DB Source Output].Columns[paid_amount]"/>
+                    <inputColumn refId="Package\DFT_PharmacyAggregation\AGG_Pharmacy.Inputs[Aggregate Input 1].Columns[ingredient_cost]"
+                      cachedDataType="numeric"
+                      cachedPrecision="10"
+                      cachedScale="2"
+                      cachedName="ingredient_cost"
+                      lineageId="Package\DFT_PharmacyAggregation\SRC_PharmacyForAgg.Outputs[OLE DB Source Output].Columns[ingredient_cost]"/>
+                    <inputColumn refId="Package\DFT_PharmacyAggregation\AGG_Pharmacy.Inputs[Aggregate Input 1].Columns[days_supply]"
+                      cachedDataType="i4"
+                      cachedName="days_supply"
+                      lineageId="Package\DFT_PharmacyAggregation\SRC_PharmacyForAgg.Outputs[OLE DB Source Output].Columns[days_supply]"/>
+                    <inputColumn refId="Package\DFT_PharmacyAggregation\AGG_Pharmacy.Inputs[Aggregate Input 1].Columns[quantity]"
+                      cachedDataType="numeric"
+                      cachedPrecision="10"
+                      cachedScale="3"
+                      cachedName="quantity"
+                      lineageId="Package\DFT_PharmacyAggregation\SRC_PharmacyForAgg.Outputs[OLE DB Source Output].Columns[quantity]"/>
+                  </inputColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT_PharmacyAggregation\AGG_Pharmacy.Outputs[Aggregate Output 1]"
+                  name="Aggregate Output 1">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DFT_PharmacyAggregation\AGG_Pharmacy.Outputs[Aggregate Output 1].Columns[member_id]"
+                      dataType="wstr"
+                      length="50"
+                      lineageId="Package\DFT_PharmacyAggregation\AGG_Pharmacy.Outputs[Aggregate Output 1].Columns[member_id]"
+                      name="member_id">
+                      <properties>
+                        <property name="AggregationType" dataType="System.Int32">0</property>
+                        <property name="AggregationColumnId" dataType="System.Int32">0</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\DFT_PharmacyAggregation\AGG_Pharmacy.Outputs[Aggregate Output 1].Columns[total_rx_claims]"
+                      dataType="i4"
+                      lineageId="Package\DFT_PharmacyAggregation\AGG_Pharmacy.Outputs[Aggregate Output 1].Columns[total_rx_claims]"
+                      name="total_rx_claims">
+                      <properties>
+                        <property name="AggregationType" dataType="System.Int32">2</property>
+                        <property name="AggregationColumnId" dataType="System.Int32">1</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\DFT_PharmacyAggregation\AGG_Pharmacy.Outputs[Aggregate Output 1].Columns[total_rx_cost]"
+                      dataType="numeric"
+                      precision="18"
+                      scale="2"
+                      lineageId="Package\DFT_PharmacyAggregation\AGG_Pharmacy.Outputs[Aggregate Output 1].Columns[total_rx_cost]"
+                      name="total_rx_cost">
+                      <properties>
+                        <property name="AggregationType" dataType="System.Int32">4</property>
+                        <property name="AggregationColumnId" dataType="System.Int32">2</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\DFT_PharmacyAggregation\AGG_Pharmacy.Outputs[Aggregate Output 1].Columns[total_rx_paid]"
+                      dataType="numeric"
+                      precision="18"
+                      scale="2"
+                      lineageId="Package\DFT_PharmacyAggregation\AGG_Pharmacy.Outputs[Aggregate Output 1].Columns[total_rx_paid]"
+                      name="total_rx_paid">
+                      <properties>
+                        <property name="AggregationType" dataType="System.Int32">4</property>
+                        <property name="AggregationColumnId" dataType="System.Int32">3</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\DFT_PharmacyAggregation\AGG_Pharmacy.Outputs[Aggregate Output 1].Columns[total_ingredient_cost]"
+                      dataType="numeric"
+                      precision="18"
+                      scale="2"
+                      lineageId="Package\DFT_PharmacyAggregation\AGG_Pharmacy.Outputs[Aggregate Output 1].Columns[total_ingredient_cost]"
+                      name="total_ingredient_cost">
+                      <properties>
+                        <property name="AggregationType" dataType="System.Int32">4</property>
+                        <property name="AggregationColumnId" dataType="System.Int32">4</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\DFT_PharmacyAggregation\AGG_Pharmacy.Outputs[Aggregate Output 1].Columns[total_days_supply]"
+                      dataType="i8"
+                      lineageId="Package\DFT_PharmacyAggregation\AGG_Pharmacy.Outputs[Aggregate Output 1].Columns[total_days_supply]"
+                      name="total_days_supply">
+                      <properties>
+                        <property name="AggregationType" dataType="System.Int32">4</property>
+                        <property name="AggregationColumnId" dataType="System.Int32">5</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\DFT_PharmacyAggregation\AGG_Pharmacy.Outputs[Aggregate Output 1].Columns[total_quantity]"
+                      dataType="numeric"
+                      precision="18"
+                      scale="3"
+                      lineageId="Package\DFT_PharmacyAggregation\AGG_Pharmacy.Outputs[Aggregate Output 1].Columns[total_quantity]"
+                      name="total_quantity">
+                      <properties>
+                        <property name="AggregationType" dataType="System.Int32">4</property>
+                        <property name="AggregationColumnId" dataType="System.Int32">6</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                </output>
+              </outputs>
+            </component>
+
+            <!-- Destination: Pharmacy Aggregation -->
+            <component
+              refId="Package\DFT_PharmacyAggregation\DST_PharmacyAgg"
+              componentClassID="Microsoft.OLEDBDestination"
+              contactInfo="OLE DB Destination"
+              description="Load pharmacy aggregation"
+              name="DST_PharmacyAgg"
+              usesDispositions="true"
+              version="4">
+              <properties>
+                <property name="CommandTimeout" dataType="System.Int32">0</property>
+                <property name="OpenRowset" dataType="System.String">dbo.pharmacy_aggregation</property>
+                <property name="AccessMode" dataType="System.Int32">3</property>
+                <property name="FastLoadKeepIdentity" dataType="System.Boolean">false</property>
+                <property name="FastLoadKeepNulls" dataType="System.Boolean">false</property>
+                <property name="FastLoadMaxInsertCommitSize" dataType="System.Int32">2147483647</property>
+                <property name="FastLoadOptions" dataType="System.String">TABLOCK,CHECK_CONSTRAINTS</property>
+              </properties>
+              <connections>
+                <connection refId="Package\DFT_PharmacyAggregation\DST_PharmacyAgg.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[TargetDB]"
+                  connectionManagerRefId="Package.ConnectionManagers[TargetDB]"
+                  name="OleDbConnection"/>
+              </connections>
+              <inputs>
+                <input refId="Package\DFT_PharmacyAggregation\DST_PharmacyAgg.Inputs[OLE DB Destination Input]" name="OLE DB Destination Input"/>
+              </inputs>
+            </component>
+
+          </components>
+
+          <!-- Data Flow Paths for Pharmacy Aggregation -->
+          <paths>
+            <path refId="Package\DFT_PharmacyAggregation.Paths[Source to Aggregate]"
+              endId="Package\DFT_PharmacyAggregation\AGG_Pharmacy.Inputs[Aggregate Input 1]"
+              name="Source to Aggregate"
+              startId="Package\DFT_PharmacyAggregation\SRC_PharmacyForAgg.Outputs[OLE DB Source Output]"/>
+            <path refId="Package\DFT_PharmacyAggregation.Paths[Aggregate to Destination]"
+              endId="Package\DFT_PharmacyAggregation\DST_PharmacyAgg.Inputs[OLE DB Destination Input]"
+              name="Aggregate to Destination"
+              startId="Package\DFT_PharmacyAggregation\AGG_Pharmacy.Outputs[Aggregate Output 1]"/>
+          </paths>
+        </pipeline>
+      </DTS:ObjectData>
+    </DTS:Executable>
+
+    <!-- ========================================== -->
+    <!-- TASK 6: Data Flow - Patient Journey Aggregation -->
+    <!-- ========================================== -->
+    <DTS:Executable
+      DTS:refId="Package\DFT_PatientJourney"
+      DTS:CreationName="Microsoft.Pipeline"
+      DTS:Description="Create patient journey: years with claims, encounter tracking"
+      DTS:DTSID="{DFT00006-0006-0006-0006-000000000006}"
+      DTS:ExecutableType="Microsoft.Pipeline"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="DFT_PatientJourney"
+      DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation">
+
+      <DTS:ObjectData>
+        <pipeline version="1">
+          <components>
+
+            <!-- Source: Combined Claims and Pharmacy for Patient Journey -->
+            <component
+              refId="Package\DFT_PatientJourney\SRC_PatientJourney"
+              componentClassID="Microsoft.OLEDBSource"
+              contactInfo="OLE DB Source"
+              description="Union claims and pharmacy for patient journey"
+              name="SRC_PatientJourney"
+              usesDispositions="true"
+              version="7">
+              <properties>
+                <property name="CommandTimeout" dataType="System.Int32">0</property>
+                <property name="AccessMode" dataType="System.Int32">2</property>
+                <property name="SqlCommand" dataType="System.String">-- Combine claims and pharmacy encounters for patient journey
+SELECT
+    member_id,
+    claim_year AS encounter_year,
+    'MEDICAL' AS encounter_type,
+    service_date_start AS encounter_date,
+    1 AS encounter_count
+FROM dbo.claims_transformed
+UNION ALL
+SELECT
+    member_id,
+    rx_year AS encounter_year,
+    'PHARMACY' AS encounter_type,
+    fill_date AS encounter_date,
+    1 AS encounter_count
+FROM dbo.pharmacy_transformed</property>
+              </properties>
+              <connections>
+                <connection refId="Package\DFT_PatientJourney\SRC_PatientJourney.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[TargetDB]"
+                  connectionManagerRefId="Package.ConnectionManagers[TargetDB]"
+                  name="OleDbConnection"/>
+              </connections>
+              <outputs>
+                <output refId="Package\DFT_PatientJourney\SRC_PatientJourney.Outputs[OLE DB Source Output]"
+                  name="OLE DB Source Output">
+                  <outputColumns>
+                    <outputColumn refId="Package\DFT_PatientJourney\SRC_PatientJourney.Outputs[OLE DB Source Output].Columns[member_id]" dataType="wstr" length="50" name="member_id"/>
+                    <outputColumn refId="Package\DFT_PatientJourney\SRC_PatientJourney.Outputs[OLE DB Source Output].Columns[encounter_year]" dataType="i4" name="encounter_year"/>
+                    <outputColumn refId="Package\DFT_PatientJourney\SRC_PatientJourney.Outputs[OLE DB Source Output].Columns[encounter_type]" dataType="wstr" length="20" name="encounter_type"/>
+                    <outputColumn refId="Package\DFT_PatientJourney\SRC_PatientJourney.Outputs[OLE DB Source Output].Columns[encounter_date]" dataType="dbDate" name="encounter_date"/>
+                    <outputColumn refId="Package\DFT_PatientJourney\SRC_PatientJourney.Outputs[OLE DB Source Output].Columns[encounter_count]" dataType="i4" name="encounter_count"/>
+                  </outputColumns>
+                </output>
+              </outputs>
+            </component>
+
+            <!-- Aggregate: Patient Journey by Member and Year -->
+            <component
+              refId="Package\DFT_PatientJourney\AGG_PatientJourney"
+              componentClassID="Microsoft.Aggregate"
+              contactInfo="Aggregate Transformation"
+              description="Aggregate patient journey by member and year"
+              name="AGG_PatientJourney"
+              version="3">
+              <properties>
+                <property name="KeyDuplicates" dataType="System.Int32">0</property>
+                <property name="Keys" dataType="System.Int32">0</property>
+                <property name="CountDistinctKeys" dataType="System.Int32">0</property>
+                <property name="AutoExtendFactor" dataType="System.Int32">25</property>
+              </properties>
+              <inputs>
+                <input refId="Package\DFT_PatientJourney\AGG_PatientJourney.Inputs[Aggregate Input 1]"
+                  name="Aggregate Input 1">
+                  <inputColumns>
+                    <inputColumn refId="Package\DFT_PatientJourney\AGG_PatientJourney.Inputs[Aggregate Input 1].Columns[member_id]"
+                      cachedDataType="wstr"
+                      cachedLength="50"
+                      cachedName="member_id"
+                      lineageId="Package\DFT_PatientJourney\SRC_PatientJourney.Outputs[OLE DB Source Output].Columns[member_id]"/>
+                    <inputColumn refId="Package\DFT_PatientJourney\AGG_PatientJourney.Inputs[Aggregate Input 1].Columns[encounter_year]"
+                      cachedDataType="i4"
+                      cachedName="encounter_year"
+                      lineageId="Package\DFT_PatientJourney\SRC_PatientJourney.Outputs[OLE DB Source Output].Columns[encounter_year]"/>
+                    <inputColumn refId="Package\DFT_PatientJourney\AGG_PatientJourney.Inputs[Aggregate Input 1].Columns[encounter_count]"
+                      cachedDataType="i4"
+                      cachedName="encounter_count"
+                      lineageId="Package\DFT_PatientJourney\SRC_PatientJourney.Outputs[OLE DB Source Output].Columns[encounter_count]"/>
+                    <inputColumn refId="Package\DFT_PatientJourney\AGG_PatientJourney.Inputs[Aggregate Input 1].Columns[encounter_date]"
+                      cachedDataType="dbDate"
+                      cachedName="encounter_date"
+                      lineageId="Package\DFT_PatientJourney\SRC_PatientJourney.Outputs[OLE DB Source Output].Columns[encounter_date]"/>
+                  </inputColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT_PatientJourney\AGG_PatientJourney.Outputs[Aggregate Output 1]"
+                  name="Aggregate Output 1">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DFT_PatientJourney\AGG_PatientJourney.Outputs[Aggregate Output 1].Columns[member_id]"
+                      dataType="wstr"
+                      length="50"
+                      lineageId="Package\DFT_PatientJourney\AGG_PatientJourney.Outputs[Aggregate Output 1].Columns[member_id]"
+                      name="member_id">
+                      <properties>
+                        <property name="AggregationType" dataType="System.Int32">0</property>
+                        <property name="AggregationColumnId" dataType="System.Int32">0</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\DFT_PatientJourney\AGG_PatientJourney.Outputs[Aggregate Output 1].Columns[encounter_year]"
+                      dataType="i4"
+                      lineageId="Package\DFT_PatientJourney\AGG_PatientJourney.Outputs[Aggregate Output 1].Columns[encounter_year]"
+                      name="encounter_year">
+                      <properties>
+                        <property name="AggregationType" dataType="System.Int32">0</property>
+                        <property name="AggregationColumnId" dataType="System.Int32">1</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\DFT_PatientJourney\AGG_PatientJourney.Outputs[Aggregate Output 1].Columns[total_encounters]"
+                      dataType="i8"
+                      lineageId="Package\DFT_PatientJourney\AGG_PatientJourney.Outputs[Aggregate Output 1].Columns[total_encounters]"
+                      name="total_encounters">
+                      <properties>
+                        <property name="AggregationType" dataType="System.Int32">4</property>
+                        <property name="AggregationColumnId" dataType="System.Int32">2</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\DFT_PatientJourney\AGG_PatientJourney.Outputs[Aggregate Output 1].Columns[first_encounter_date]"
+                      dataType="dbDate"
+                      lineageId="Package\DFT_PatientJourney\AGG_PatientJourney.Outputs[Aggregate Output 1].Columns[first_encounter_date]"
+                      name="first_encounter_date">
+                      <properties>
+                        <property name="AggregationType" dataType="System.Int32">6</property>
+                        <property name="AggregationColumnId" dataType="System.Int32">3</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\DFT_PatientJourney\AGG_PatientJourney.Outputs[Aggregate Output 1].Columns[last_encounter_date]"
+                      dataType="dbDate"
+                      lineageId="Package\DFT_PatientJourney\AGG_PatientJourney.Outputs[Aggregate Output 1].Columns[last_encounter_date]"
+                      name="last_encounter_date">
+                      <properties>
+                        <property name="AggregationType" dataType="System.Int32">7</property>
+                        <property name="AggregationColumnId" dataType="System.Int32">3</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\DFT_PatientJourney\AGG_PatientJourney.Outputs[Aggregate Output 1].Columns[distinct_years]"
+                      dataType="i4"
+                      lineageId="Package\DFT_PatientJourney\AGG_PatientJourney.Outputs[Aggregate Output 1].Columns[distinct_years]"
+                      name="distinct_years">
+                      <properties>
+                        <property name="AggregationType" dataType="System.Int32">3</property>
+                        <property name="AggregationColumnId" dataType="System.Int32">1</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                </output>
+              </outputs>
+            </component>
+
+            <!-- Destination: Patient Journey -->
+            <component
+              refId="Package\DFT_PatientJourney\DST_PatientJourney"
+              componentClassID="Microsoft.OLEDBDestination"
+              contactInfo="OLE DB Destination"
+              description="Load patient journey data"
+              name="DST_PatientJourney"
+              usesDispositions="true"
+              version="4">
+              <properties>
+                <property name="CommandTimeout" dataType="System.Int32">0</property>
+                <property name="OpenRowset" dataType="System.String">dbo.patient_journey</property>
+                <property name="AccessMode" dataType="System.Int32">3</property>
+                <property name="FastLoadKeepIdentity" dataType="System.Boolean">false</property>
+                <property name="FastLoadKeepNulls" dataType="System.Boolean">false</property>
+                <property name="FastLoadMaxInsertCommitSize" dataType="System.Int32">2147483647</property>
+                <property name="FastLoadOptions" dataType="System.String">TABLOCK,CHECK_CONSTRAINTS</property>
+              </properties>
+              <connections>
+                <connection refId="Package\DFT_PatientJourney\DST_PatientJourney.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[TargetDB]"
+                  connectionManagerRefId="Package.ConnectionManagers[TargetDB]"
+                  name="OleDbConnection"/>
+              </connections>
+              <inputs>
+                <input refId="Package\DFT_PatientJourney\DST_PatientJourney.Inputs[OLE DB Destination Input]" name="OLE DB Destination Input"/>
+              </inputs>
+            </component>
+
+          </components>
+
+          <!-- Data Flow Paths for Patient Journey -->
+          <paths>
+            <path refId="Package\DFT_PatientJourney.Paths[Source to Aggregate]"
+              endId="Package\DFT_PatientJourney\AGG_PatientJourney.Inputs[Aggregate Input 1]"
+              name="Source to Aggregate"
+              startId="Package\DFT_PatientJourney\SRC_PatientJourney.Outputs[OLE DB Source Output]"/>
+            <path refId="Package\DFT_PatientJourney.Paths[Aggregate to Destination]"
+              endId="Package\DFT_PatientJourney\DST_PatientJourney.Inputs[OLE DB Destination Input]"
+              name="Aggregate to Destination"
+              startId="Package\DFT_PatientJourney\AGG_PatientJourney.Outputs[Aggregate Output 1]"/>
+          </paths>
+        </pipeline>
+      </DTS:ObjectData>
+    </DTS:Executable>
+
+  </DTS:Executables>
+
+  <!-- Precedence Constraints (Control Flow Order) -->
+  <DTS:PrecedenceConstraints>
+    <!-- Transform Members -> Transform Claims -->
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Members to Claims]"
+      DTS:CreationName=""
+      DTS:DTSID="{PC000001-0001-0001-0001-000000000001}"
+      DTS:From="Package\DFT_TransformMembers"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Members to Claims"
+      DTS:To="Package\DFT_TransformClaims"/>
+
+    <!-- Transform Members -> Transform Pharmacy (parallel with Claims) -->
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Members to Pharmacy]"
+      DTS:CreationName=""
+      DTS:DTSID="{PC000002-0002-0002-0002-000000000002}"
+      DTS:From="Package\DFT_TransformMembers"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Members to Pharmacy"
+      DTS:To="Package\DFT_TransformPharmacy"/>
+
+    <!-- Transform Claims -> Member Claims Aggregation -->
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Claims to ClaimsAgg]"
+      DTS:CreationName=""
+      DTS:DTSID="{PC000003-0003-0003-0003-000000000003}"
+      DTS:From="Package\DFT_TransformClaims"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Claims to ClaimsAgg"
+      DTS:To="Package\DFT_MemberClaimsAggregation"/>
+
+    <!-- Transform Pharmacy -> Pharmacy Aggregation -->
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Pharmacy to PharmacyAgg]"
+      DTS:CreationName=""
+      DTS:DTSID="{PC000004-0004-0004-0004-000000000004}"
+      DTS:From="Package\DFT_TransformPharmacy"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Pharmacy to PharmacyAgg"
+      DTS:To="Package\DFT_PharmacyAggregation"/>
+
+    <!-- Member Claims Aggregation -> Patient Journey -->
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[ClaimsAgg to Journey]"
+      DTS:CreationName=""
+      DTS:DTSID="{PC000005-0005-0005-0005-000000000005}"
+      DTS:From="Package\DFT_MemberClaimsAggregation"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="ClaimsAgg to Journey"
+      DTS:To="Package\DFT_PatientJourney"/>
+
+    <!-- Pharmacy Aggregation -> Patient Journey -->
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[PharmacyAgg to Journey]"
+      DTS:CreationName=""
+      DTS:DTSID="{PC000006-0006-0006-0006-000000000006}"
+      DTS:From="Package\DFT_PharmacyAggregation"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="PharmacyAgg to Journey"
+      DTS:To="Package\DFT_PatientJourney"/>
+  </DTS:PrecedenceConstraints>
+
+</DTS:Executable>

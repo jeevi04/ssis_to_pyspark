@@ -1,0 +1,17 @@
+{
+  "workflow": "HealthcareETL",
+  "silver_tables": [
+    "member_transformed",
+    "claims_transformed",
+    "pharmacy_transformed",
+    "member_claims_aggregation",
+    "pharmacy_aggregation"
+  ],
+  "silver_table_fqns": [
+    "silver.member_transformed",
+    "silver.claims_transformed",
+    "silver.pharmacy_transformed",
+    "silver.member_claims_aggregation",
+    "silver.pharmacy_aggregation"
+  ]
+}
